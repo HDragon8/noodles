@@ -12,7 +12,7 @@ sed -i 's/192.168.1.1/192.168.30.1/g' package/base-files/files/bin/config_genera
 sed -i 's/OpenWrt/noodles/g' package/base-files/files/bin/config_generate
 
 # Modify default WiFi SSID
-sed -i 's/OpenWrt/noodles/g' package/kernel/mac80211/files/lib/wifi/mac80211.sh
+#sed -i 's/OpenWrt/noodles/g' package/kernel/mac80211/files/lib/wifi/mac80211.sh
 
 # Modify default theme
 sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' feeds/luci/collections/luci/Makefile
