@@ -4,9 +4,10 @@
 # Lisence: MIT
 # Author: P3TERX
 # Blog: https://p3terx.com
+# OpenAppFilter source code from https://github.com/destan19/OpenAppFilter
 #=================================================
 
-name: Build OpenWrt for newifiD2
+name: Build OpenWrt for newifi_D2
 
 on:
   release:
@@ -18,17 +19,18 @@ on:
 #      - '.config'
 #  schedule:
 #    - cron: 0 8 * * 5
-  watch:
-    types: started
+#  watch:
+#    types: started
 
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede
   REPO_BRANCH: master
   CONFIG_FILE: newifi.config
-  DIY_SH: newifi.sh
-  SSH_ACTIONS: false
+  DIY_SH: diy.sh
+  SSH_ACTIONS: true
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
+  UPLOAD_RELEASE: true
   TZ: Asia/Shanghai
 
 jobs:
@@ -51,7 +53,6 @@ jobs:
         sudo -E apt-get -qq autoremove --purge
         sudo -E apt-get -qq clean
         curl -fsSL https://raw.githubusercontent.com/P3TERX/dotfiles/master/.bashrc >> ~/.bashrc
-
     - name: Clone source code
       run: git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
 
@@ -61,6 +62,9 @@ jobs:
     - name: Install feeds
       run: cd openwrt && ./scripts/feeds install -a
 
+    - name: Clone OpenAppFilter source code
+      run: cd openwrt/package && git clone https://github.com/destan19/OpenAppFilter.git
+
     - name: Load custom configuration
       run: |
         [ -e files ] && mv files openwrt/files
@@ -68,7 +72,6 @@ jobs:
         chmod +x $DIY_SH
         cd openwrt
         ../$DIY_SH
-
     - name: SSH connection to Actions
       uses: P3TERX/debugger-action@master
       if: env.SSH_ACTIONS == 'true'
@@ -81,7 +84,6 @@ jobs:
         make download -j8
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
-
     - name: Compile the firmware
       id: compile
       run: |
@@ -89,7 +91,6 @@ jobs:
         echo -e "$(nproc) thread compile"
         make -j$(nproc) || make -j1 V=s
         echo "::set-output name=status::success"
-
     - name: Upload bin directory
       uses: actions/upload-artifact@master
       if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
@@ -105,10 +106,17 @@ jobs:
         rm -rf packages
         echo "::set-env name=FIRMWARE::$PWD"
         echo "::set-output name=status::success"
-
     - name: Upload firmware directory
       uses: actions/upload-artifact@master
       if: steps.organize.outputs.status == 'success' && !cancelled()
       with:
         name: OpenWrt_firmware
         path: ${{ env.FIRMWARE }}
+
+    - name: Upload to release
+      uses: softprops/action-gh-release@v1
+      if: env.UPLOAD_RELEASE == 'true' && startsWith(github.ref, 'refs/tags/')
+      env:
+        GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+      with:
+        files: ${{ env.FIRMWARE }}/*
