@@ -1,4 +1,6 @@
 #=================================================
+# 复制自https://github.com/P3TERX/OpenWrt-Newifi_D2
+# Thanks P3TERX
 # https://github.com/P3TERX/Actions-OpenWrt
 # Description: Build OpenWrt using GitHub Actions
 # Lisence: MIT
@@ -32,4 +34,4 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
       with:
         tag_name: ${{ env.RELEASE_TAG }}
-        body: 🚀 Automated build | 自动编译
+        body: 🚀 build OpenWrt | 编译OpenWrt
