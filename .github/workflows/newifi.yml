@@ -10,8 +10,8 @@
 name: Build OpenWrt for newifi_D2
 
 on:
-  release:
-    types: published
+#  release:
+#    types: published
 #  push:
 #    branches:
 #      - master
