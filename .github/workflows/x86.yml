@@ -56,6 +56,10 @@ jobs:
     - name: Clone source code
       run: git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
 
+    - name: SSH connection to Actions
+      uses: P3TERX/debugger-action@master
+      if: env.SSH_ACTIONS == 'true'
+
     - name: Clone OpenAppFilter source code
       run: cd openwrt/package && git clone https://github.com/destan19/OpenAppFilter.git
 
