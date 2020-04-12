@@ -16,17 +16,17 @@ sed -i 's/OpenWrt/noodles/g' package/base-files/files/bin/config_generate
 sed -i 's/OpenWrt/noodles/g' package/kernel/mac80211/files/lib/wifi/mac80211.sh
 
 # Modify the version number
-sed -i 's/OpenWrt/noodles @ $(date "+%Y.%m.%d") build OpenWrt/g' package/lean/default-settings/files/zzz-default-settings
+sed -i 's/OpenWrt/noodles @ $(date "+%Y.%m.%d") build 春季版 OpenWrt/g' package/lean/default-settings/files/zzz-default-settings
 
 # Modify default theme
 sed -i 's/luci-theme-bootstrap/luci-theme-argon/g' feeds/luci/collections/luci/Makefile
 
 # Add kernel build user
-#[ -z $(grep "CONFIG_KERNEL_BUILD_USER=" .config) ] &&
-#    echo 'CONFIG_KERNEL_BUILD_USER="P3TERX"' >>.config ||
-#    sed -i 's@\(CONFIG_KERNEL_BUILD_USER=\).*@\1$"P3TERX"@' .config
+[ -z $(grep "CONFIG_KERNEL_BUILD_USER=" .config) ] &&
+    echo 'CONFIG_KERNEL_BUILD_USER="noodles"' >>.config ||
+    sed -i 's@\(CONFIG_KERNEL_BUILD_USER=\).*@\1$"noodles"@' .config
 
 # Add kernel build domain
-#[ -z $(grep "CONFIG_KERNEL_BUILD_DOMAIN=" .config) ] &&
-#    echo 'CONFIG_KERNEL_BUILD_DOMAIN="GitHub Actions"' >>.config ||
-#    sed -i 's@\(CONFIG_KERNEL_BUILD_DOMAIN=\).*@\1$"GitHub Actions"@' .config
+[ -z $(grep "CONFIG_KERNEL_BUILD_DOMAIN=" .config) ] &&
+    echo 'CONFIG_KERNEL_BUILD_DOMAIN="HDragon"' >>.config ||
+    sed -i 's@\(CONFIG_KERNEL_BUILD_DOMAIN=\).*@\1$"HDragon"@' .config
