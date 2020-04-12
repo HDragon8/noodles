@@ -75,6 +75,7 @@ jobs:
        git clone https://github.com/destan19/OpenAppFilter
        git clone https://github.com/tty228/luci-app-serverchan
        git clone https://github.com/scolate/luci-app-vssr-1
+       git clone https://github.com/jerrykuku/lua-maxminddb
       
     - name: 我的主题
       run: |
