@@ -33,7 +33,7 @@ env:
   REPO_BRANCH: master
   CONFIG_FILE: newifi.config
   DIY_SH: newifi.sh
-  SSH_ACTIONS: false
+  SSH_ACTIONS: true
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: true
@@ -63,19 +63,20 @@ jobs:
     - name: 同步源码
       run: git clone --depth 1 $REPO_URL -b $REPO_BRANCH openwrt
 
-    - name: Update feeds
-      run: cd openwrt && ./scripts/feeds update -a
-
-    - name: Install feeds
-      run: cd openwrt && ./scripts/feeds install -a
+    - name: Update and install feeds
+      run: |
+       cd openwrt
+       sed -i 's/\"#src-git\"/\"src-git\"/g' ./feeds.conf.default
+       ./scripts/feeds update -a
+       ./scripts/feeds install -a
 
     - name: 应用限制/微信推送/vssr
       run: |
        cd openwrt/package
        git clone https://github.com/destan19/OpenAppFilter
        git clone https://github.com/tty228/luci-app-serverchan
-       git clone https://github.com/scolate/luci-app-vssr-1
-       git clone https://github.com/jerrykuku/lua-maxminddb
+#       git clone https://github.com/scolate/luci-app-vssr-1
+#       git clone https://github.com/jerrykuku/lua-maxminddb
       
     - name: 我的主题
       run: |
