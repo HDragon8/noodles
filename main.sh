@@ -32,11 +32,11 @@ git_clone https://github.com/kiddin9/openwrt-cloudreve && mvdir openwrt-cloudrev
 git_clone https://github.com/xiaorouji/openwrt-passwall && mvdir openwrt-passwall
 #git_clone https://github.com/fw876/helloworld && mvdir helloworld
 #git_clone https://github.com/Lienol/openwrt-package liep
-#git clone https://github.com/AutoCONFIG/minieap-openwrt -b default
+git clone https://github.com/AutoCONFIG/minieap-openwrt -b default
 git_clone https://github.com/rufengsuixing/luci-app-autoipsetadder
 git_clone https://github.com/NateLol/luci-app-beardropper
 git_clone https://github.com/riverscn/openwrt-iptvhelper && mvdir openwrt-iptvhelper
-#git_clone https://github.com/BoringCat/luci-app-minieap
+git_clone https://github.com/BoringCat/luci-app-minieap
 
 git_clone https://github.com/jerrykuku/luci-theme-argon
 git_clone https://github.com/jerrykuku/luci-app-argon-config
@@ -146,8 +146,8 @@ svn export https://github.com/Lienol/openwrt-package/trunk/luci-app-control-webu
 
 git_sparse_clone master "https://github.com/coolsnowwolf/packages" "leanpkg" net/miniupnpd net/mwan3 multimedia/UnblockNeteaseMusic-Go \
 multimedia/UnblockNeteaseMusic net/amule net/antileech net/baidupcs-web net/frp multimedia/gmediarender net/go-aliyundrive-webdav \
-net/qBittorrent-static net/qBittorrent net/transmission net/phtunnel libs/qtbase libs/qttools libs/rblibtorrent \
-net/uugamebooster net/verysync net/vlmcsd net/dnsforwarder net/nps net/tcpping net/netatalk net/pgyvpn
+net/qBittorrent-static net/qBittorrent net/transmission net/phtunnel libs/qtbase libs/qttools libs/rblibtorrent devel/go-rice \
+net/uugamebooster net/verysync net/vlmcsd net/dnsforwarder net/nps net/n2n net/mosdns net/tcpping net/netatalk net/pgyvpn libs/wxbase
 mv -f miniupnpd miniupnpd-iptables
 
 #git_sparse_clone master "https://github.com/immortalwrt/packages" "immpkgs" net/mwol \
@@ -156,7 +156,7 @@ mv -f miniupnpd miniupnpd-iptables
 #admin/bpytop libs/jpcre2 libs/wxbase libs/rapidjson libs/libcron libs/quickjspp libs/toml11 \
 #utils/cpulimit utils/filebrowser utils/cups net/udp2raw net/msd_lite net/xfrpc
 git_sparse_clone master "https://github.com/immortalwrt/packages" "immpkgs" net/cdnspeedtest utils/filebrowser utils/cpulimit \
-net/gost net/gowebdav net/dnsproxy
+net/gost net/gowebdav net/dnsproxy utils/cups
 
 git_sparse_clone master "https://github.com/xiaoqingfengATGH/feeds-xiaoqingfeng" "xiaoqingfeng" homeredirect luci-app-homeredirect
 
