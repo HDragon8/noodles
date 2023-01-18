@@ -140,6 +140,9 @@ svn export https://github.com/fw876/helloworld/trunk/lua-neturl
 svn export https://github.com/fw876/helloworld/trunk/redsocks2
 svn export https://github.com/fw876/helloworld/trunk/microsocks
 svn export https://github.com/Lienol/openwrt-package/trunk/luci-app-timecontrol
+svn export https://github.com/Lienol/openwrt-package/trunk/luci-app-control-timewol
+svn export https://github.com/Lienol/openwrt-package/trunk/luci-app-control-webrestriction
+svn export https://github.com/Lienol/openwrt-package/trunk/luci-app-control-weburl
 
 git_sparse_clone master "https://github.com/coolsnowwolf/packages" "leanpkg" net/miniupnpd net/mwan3 multimedia/UnblockNeteaseMusic-Go \
 multimedia/UnblockNeteaseMusic net/amule net/antileech net/baidupcs-web net/frp multimedia/gmediarender net/go-aliyundrive-webdav \
@@ -180,10 +183,8 @@ applications/luci-app-xlnetacc applications/luci-app-zerotier libs/luci-lib-fs
 #rm -rf luciapp/{luci-app-qbittorrent,luci-app-cpufreq}
 #git_sparse_clone master "https://github.com/immortalwrt/luci" "immluci" applications protocols/luci-proto-minieap
 git_sparse_clone master "https://github.com/immortalwrt/luci" "immluci" applications/luci-app-cpufreq applications/luci-app-advancedsetting applications/luci-app-cd8021x \
-applications/luci-app-chinesesubfinder applications/luci-app-cellled applications/luci-app-cloudreve applications/luci-app-codeserver applications/luci-app-control-timewol \
-applications/luci-app-control-webrestriction applications/luci-app-control-weburl applications/luci-app-cpulimit applications/luci-app-easyupdate \
-applications/luci-app-filebrowser applications/luci-app-excalidraw applications/luci-app-fileassistant applications/luci-app-gowebdav applications/luci-app-gost \
-applications/luci-app-unblockneteasemusic-go applications/luci-app-unblockneteasemusic applications/luci-app-usb3disable pplications/luci-app-xunlei \
+applications/luci-app-filebrowser applications/luci-app-fileassistant applications/luci-app-gowebdav applications/luci-app-gost \
+applications/luci-app-unblockneteasemusic-go applications/luci-app-unblockneteasemusic applications/luci-app-usb3disable applications/luci-app-cpulimit \
 applications/luci-app-timewol protocols/luci-proto-minieap
 #mv -n applications/* luciapp/; rm -rf applications
 
