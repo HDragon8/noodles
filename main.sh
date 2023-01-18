@@ -201,7 +201,7 @@ mv -n luciapp/* ./ ; rm -Rf luciapp
 #rm -rf luci-app-cshark & rm -rf luci-app-dnscrypt-proxy & rm -rf luci-app-https-dns-proxy & rm -rf luci-app-ssr-mudb-server
 #rm -rf luci-app-ledtrig-*
 #rm -rf luci-app-samba
-#mv -n lean/* ./ ; rm -Rf lean
+mv -n lean/* ./ ; rm -Rf lean
 #mv -n liep/* ./ ; rm -Rf liep
 mv -n openwrt-app-actions/applications/* ./;rm -rf openwrt-app-actions
 rm -Rf */.git
