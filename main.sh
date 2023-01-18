@@ -196,7 +196,7 @@ done
 
 git_sparse_clone master "https://github.com/coolsnowwolf/lede" "leanlede" package/lean package/network/services/shellsync
 
-mv -n luciapp/* ./ ; rm -Rf luciapp
+#mv -n luciapp/* ./ ; rm -Rf luciapp
 #mv -n luciapp/!(luci-app-noddos|luci-app-cshark|luci-app-dnscrypt-proxy|luci-app-https-dns-proxy|luci-app-ssr-mudb-server|luci-app-ledtrig-*) ./ ; rm -Rf luciapp
 #rm -rf luci-app-noddos
 #rm -rf luci-app-cshark & rm -rf luci-app-dnscrypt-proxy & rm -rf luci-app-https-dns-proxy & rm -rf luci-app-ssr-mudb-server
@@ -225,7 +225,7 @@ sed -i "/minisign:minisign/d" luci-app-dnscrypt-proxy2/Makefile
 #sed -i '$i /etc/init.d/dockerd restart &' luci-app-docker*/root/etc/uci-defaults/*
 sed -i 's/+libcap /+libcap +libcap-bin /' luci-app-openclash/Makefile
 sed -i 's/\(+luci-compat\)/\1 +luci-theme-argon/' luci-app-argon-config/Makefile
-sed -i 's/\(+luci-compat\)/\1 +luci-theme-argonne/' luci-app-argonne-config/Makefile
+#sed -i 's/\(+luci-compat\)/\1 +luci-theme-argonne/' luci-app-argonne-config/Makefile
 sed -i 's/ +uhttpd-mod-ubus//' luci-app-packet-capture/Makefile
 sed -i 's/	ip.neighbors/	luci.ip.neighbors/' luci-app-wifidog/luasrc/model/cbi/wifidog/wifidog_cfg.lua
 sed -i "s/nas/services/g" `grep nas -rl luci-app-fileassistant`
