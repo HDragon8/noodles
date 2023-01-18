@@ -139,6 +139,7 @@ svn export https://github.com/fw876/helloworld/trunk/luci-app-ssr-plus
 svn export https://github.com/fw876/helloworld/trunk/lua-neturl
 svn export https://github.com/fw876/helloworld/trunk/redsocks2
 svn export https://github.com/fw876/helloworld/trunk/microsocks
+svn export https://github.com/Lienol/openwrt-package/trunk/luci-app-timecontrol
 
 git_sparse_clone master "https://github.com/coolsnowwolf/packages" "leanpkg" net/miniupnpd net/mwan3 multimedia/UnblockNeteaseMusic-Go \
 multimedia/UnblockNeteaseMusic net/amule net/antileech net/baidupcs-web net/frp multimedia/gmediarender net/go-aliyundrive-webdav \
@@ -183,7 +184,7 @@ applications/luci-app-chinesesubfinder applications/luci-app-cellled application
 applications/luci-app-control-webrestriction applications/luci-app-control-weburl applications/luci-app-cpulimit applications/luci-app-easyupdate \
 applications/luci-app-filebrowser applications/luci-app-excalidraw applications/luci-app-fileassistant applications/luci-app-gowebdav applications/luci-app-gost \
 applications/luci-app-unblockneteasemusic-go applications/luci-app-unblockneteasemusic applications/luci-app-usb3disable pplications/luci-app-xunlei \
-protocols/luci-proto-minieap
+applications/luci-app-timewol protocols/luci-proto-minieap
 #mv -n applications/* luciapp/; rm -rf applications
 
 for ipk in $(ls -d luciapp/!(luci-app-rclone|luci-app-mwan3|luci-app-transmission)/); do
