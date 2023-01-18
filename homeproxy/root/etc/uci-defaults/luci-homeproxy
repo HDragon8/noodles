@@ -1,0 +1,11 @@
+#!/bin/sh
+
+[ -e "$(command -v fw4)" ] || {
+	uci -q batch <<-EOF >/dev/null
+		delete firewall.homeproxy
+		commit firewall
+	EOF
+}
+
+rm -f /tmp/luci-indexcache
+exit 0
