@@ -83,8 +83,8 @@ git clone --depth 1 https://github.com/linkease/openwrt-app-actions && mv -n ope
 git clone --depth 1 https://github.com/ZeaKyX/luci-app-speedtest-web
 git clone --depth 1 https://github.com/ZeaKyX/speedtest-web
 git clone --depth 1 https://github.com/Huangjoe123/luci-app-eqos
-#git clone --depth 1 https://github.com/sirpdboy/luci-app-lucky
-git clone --depth 1 https://github.com/sirpdboy/luci-app-lucky lucik && mv -n lucik/luci-app-lucky ./ ; rm -rf lucik
+git clone --depth 1 https://github.com/sirpdboy/luci-app-lucky
+#git clone --depth 1 https://github.com/sirpdboy/luci-app-lucky lucik && mv -n lucik/luci-app-lucky ./ ; rm -rf lucik
 git clone --depth 1 https://github.com/Hyy2001X/AutoBuild-Packages && rm -rf AutoBuild-Packages/luci-app-adguardhome && mvdir AutoBuild-Packages
 git_clone https://github.com/sirpdboy/luci-app-ddns-go ddns-go && mvdir ddns-go
 #git_clone https://github.com/sirpdboy/netspeedtest && mv -n netspeedtest/luci-app-netspeedtest ./ ; rm -rf netspeedtest
