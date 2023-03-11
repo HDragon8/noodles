@@ -73,7 +73,7 @@ jobs:
         cd $GITHUB_WORKSPACE/${{matrix.target}}
         if git status --porcelain | grep .; then
           git add .
-          git commit -am "${Emoji[$[$RANDOM % ${#Emoji[@]}]]} update $(date +%Y-%m-%d" "%H:%M:%S)"
+          git commit -am "${Emoji[$[$RANDOM % ${#Emoji[@]}]]} update $(date +%Y-%m-%d" "%H:%M:%S) ${Emoji[$[$RANDOM % ${#Emoji[@]}]]}"
           git push --quiet "https://${{ secrets.noodles_TOKEN }}@github.com/HDragon8/noodles.git" HEAD:${{matrix.target}}
         else
           echo "nothing to commit"
