@@ -1,4 +1,4 @@
--- Copyright 2022 Jason
+-- Copyright 2018 Nick Peng (pymumu@gmail.com)
 
 function index()
 
