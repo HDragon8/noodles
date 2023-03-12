@@ -50,7 +50,7 @@ git clone --depth 1 https://github.com/sirpdboy/luci-app-advanced
 git clone --depth 1 https://github.com/sirpdboy/luci-theme-opentopd
 #git clone --depth 1 https://github.com/sirpdboy/luci-app-netdata
 #git clone --depth 1 https://github.com/Jason6111/luci-app-netdata
-git clone --depth 1 https://github.com/HDragon8/luci-app-netdata
+#git clone --depth 1 https://github.com/HDragon8/luci-app-netdata
 git clone --depth 1 https://github.com/sirpdboy/luci-app-poweroffdevice
 git clone --depth 1 https://github.com/sirpdboy/luci-app-autotimeset
 git clone --depth 1 https://github.com/KFERMercer/luci-app-tcpdump
