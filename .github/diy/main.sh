@@ -19,7 +19,6 @@ rm -rf $1
 git clone --depth 1 -b 18.06 https://github.com/kiddin9/luci-theme-edge
 git clone --depth 1 https://github.com/kiddin9/openwrt-amule-dlp && mvdir openwrt-amule-dlp
 git clone --depth 1 https://github.com/yichya/luci-app-xray
-#git clone --depth 1 https://github.com/xiaorouji/openwrt-passwall
 git clone --depth 1 https://github.com/xiaorouji/openwrt-passwall && mvdir openwrt-passwall
 git clone --depth 1 https://github.com/fw876/helloworld && mvdir helloworld
 git clone --depth 1 https://github.com/Lienol/openwrt-package
@@ -30,7 +29,7 @@ git clone --depth 1 https://github.com/BoringCat/luci-app-minieap
 git clone --depth 1 https://github.com/peter-tank/luci-app-dnscrypt-proxy2
 git clone --depth 1 https://github.com/peter-tank/luci-app-autorepeater
 git clone --depth 1 https://github.com/rufengsuixing/luci-app-autoipsetadder
-#git clone --depth 1 https://github.com/ElvenP/luci-app-onliner
+git clone --depth 1 https://github.com/ElvenP/luci-app-onliner
 git clone --depth 1 https://github.com/rufengsuixing/luci-app-usb3disable
 git clone --depth 1 https://github.com/riverscn/openwrt-iptvhelper && mvdir openwrt-iptvhelper
 git clone --depth 1 https://github.com/KyleRicardo/MentoHUST-OpenWrt-ipk
@@ -93,8 +92,8 @@ git_clone https://github.com/sirpdboy/netspeedtest && mvdir netspeedtest
 git_clone https://github.com/HDragon8/add_openwrt_Build_name
 git clone --depth 1 https://github.com/gngpp/luci-app-design-config
 git clone --depth 1 https://github.com/gngpp/luci-theme-design
-#git clone --depth 1 https://github.com/esirplayground/LingTiGameAcc
-#git clone --depth 1 https://github.com/esirplayground/luci-app-LingTiGameAcc
+git clone --depth 1 https://github.com/esirplayground/LingTiGameAcc
+git clone --depth 1 https://github.com/esirplayground/luci-app-LingTiGameAcc
 git clone --depth 1 -b master https://github.com/UnblockNeteaseMusic/luci-app-unblockneteasemusic
 git clone --depth 1 https://github.com/AlexZhuo/luci-app-bandwidthd
 
@@ -140,13 +139,13 @@ git_sparse_clone develop "https://github.com/Ysurac/openmptcprouter-feeds" "enmp
 luci-app-packet-capture luci-app-mail msmtp
 git_sparse_clone master "https://github.com/x-wrt/com.x-wrt" "x-wrt" natflow lua-ipops luci-app-macvlan
 
-rm -rf LingTiGameAcc
-rm -rf luci-app-LingTiGameAcc
-git_sparse_clone LingTiGameAcc "https://github.com/linkease/istore-packages" "LingTi" LingTiGameAcc luci-app-LingTiGameAcc
+#rm -rf LingTiGameAcc
+#rm -rf luci-app-LingTiGameAcc
+#git_sparse_clone LingTiGameAcc "https://github.com/linkease/istore-packages" "LingTi" LingTiGameAcc luci-app-LingTiGameAcc
 
-rm -rf luci-app-onliner
+#rm -rf luci-app-onliner
 #git_clone https://github.com/haiibo/luci-app-onliner
-git clone --depth 1 https://github.com/ElvenP/luci-app-onliner
+#git clone --depth 1 https://github.com/ElvenP/luci-app-onliner
 
 mv -n openwrt-passwall/* ./ ; rm -Rf openwrt-passwall
 mv -n openwrt-package/* ./ ; rm -Rf openwrt-package
