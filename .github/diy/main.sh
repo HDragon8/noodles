@@ -86,10 +86,10 @@ git clone --depth 1 https://github.com/Huangjoe123/luci-app-eqos
 git clone --depth 1 https://github.com/sirpdboy/luci-app-lucky
 #git clone --depth 1 https://github.com/sirpdboy/luci-app-lucky lucik && mv -n lucik/luci-app-lucky ./ ; rm -rf lucik
 git clone --depth 1 https://github.com/Hyy2001X/AutoBuild-Packages && rm -rf AutoBuild-Packages/luci-app-adguardhome && mvdir AutoBuild-Packages
-git_clone https://github.com/sirpdboy/luci-app-ddns-go ddns-go && mvdir ddns-go
+git clone --depth 1 https://github.com/sirpdboy/luci-app-ddns-go ddns-go && mvdir ddns-go
 #git_clone https://github.com/sirpdboy/netspeedtest && mv -n netspeedtest/luci-app-netspeedtest ./ ; rm -rf netspeedtest
-git_clone https://github.com/sirpdboy/netspeedtest && mvdir netspeedtest
-git_clone https://github.com/HDragon8/add_openwrt_Build_name
+git clone --depth 1 https://github.com/sirpdboy/netspeedtest && mvdir netspeedtest
+git clone --depth 1 https://github.com/HDragon8/add_openwrt_Build_name
 git clone --depth 1 https://github.com/gngpp/luci-app-design-config
 git clone --depth 1 https://github.com/gngpp/luci-theme-design
 git clone --depth 1 https://github.com/esirplayground/LingTiGameAcc
@@ -139,20 +139,11 @@ git_sparse_clone develop "https://github.com/Ysurac/openmptcprouter-feeds" "enmp
 luci-app-packet-capture luci-app-mail msmtp
 git_sparse_clone master "https://github.com/x-wrt/com.x-wrt" "x-wrt" natflow lua-ipops luci-app-macvlan
 
-#rm -rf LingTiGameAcc
-#rm -rf luci-app-LingTiGameAcc
-#git_sparse_clone LingTiGameAcc "https://github.com/linkease/istore-packages" "LingTi" LingTiGameAcc luci-app-LingTiGameAcc
-
-#rm -rf luci-app-onliner
-#git_clone https://github.com/haiibo/luci-app-onliner
-#git clone --depth 1 https://github.com/ElvenP/luci-app-onliner
-
-mv -n openwrt-passwall/* ./ ; rm -Rf openwrt-passwall
+#mv -n openwrt-passwall/* ./ ; rm -Rf openwrt-passwall
 mv -n openwrt-package/* ./ ; rm -Rf openwrt-package
 
 rm -rf ./*/.git & rm -f ./*/.gitattributes
 rm -rf ./*/.svn & rm -rf ./*/.github & rm -rf ./*/.gitignore
-#rm -rf luci-app-netdata
 
 sed -i \
 -e 's?include \.\./\.\./\(lang\|devel\)?include $(TOPDIR)/feeds/packages/\1?' \
