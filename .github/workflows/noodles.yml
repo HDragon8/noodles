@@ -34,17 +34,17 @@ jobs:
       with:
         fetch-depth: 0
 
-#    - name: Initialization environment
-#      run : |
-#        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-#        git config --global user.name "github-actions[bot]"
-#        sudo timedatectl set-timezone "Asia/Shanghai"
-
     - name: Initialization environment
       run : |
-        git config --global user.email "houyonghua2015@gmail.com"
-        git config --global user.name "HDragon"
+        git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git config --global user.name "github-actions[bot]"
         sudo timedatectl set-timezone "Asia/Shanghai"
+
+#    - name: Initialization environment
+#      run : |
+#        git config --global user.email "houyonghua2015@gmail.com"
+#        git config --global user.name "HDragon"
+#        sudo timedatectl set-timezone "Asia/Shanghai"
         
     - name: Clone packages
       run: |
