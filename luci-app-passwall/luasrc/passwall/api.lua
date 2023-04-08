@@ -383,7 +383,7 @@ function get_customed_path(e)
 end
 
 function is_finded(e)
-	return luci.sys.exec('type -t -p "/bin/%s" -p "%s" "%s"' % {e, get_customed_path(e), e}) ~= "" and true or false
+	return luci.sys.exec('type -t -p "/bin/%s" -p "/usr/bin/%s" -p "%s" "%s"' % {e, e, get_customed_path(e), e}) ~= "" and true or false
 end
 
 function clone(org)
@@ -536,7 +536,7 @@ local function exec(cmd, args, writer, timeout)
 	end
 end
 
-local function compare_versions(ver1, comp, ver2)
+function compare_versions(ver1, comp, ver2)
 	local table = table
 
 	if not ver1 then ver1 = "" end
