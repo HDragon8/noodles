@@ -739,7 +739,7 @@
 		<tr><td width="33%"><%:Uptime%></td><td id="uptime">-</td></tr>
 		<tr><td width="33%"><%:Load Average%></td><td id="loadavg">-</td></tr>
 		<tr><td width="33%"><%:CPU usage (%)%></td><td style="color:#0000FF" id="cpuusage">-</td></tr>
-		<tr><td width="33%" style="color:#5e72e4"><%:Compile_noodles %></td><td style="color:orangered"><%=luci.sys.exec("cat /etc/Compile_noodles") or " "%></td></tr>
+		<tr><td width="33%" style="color:#5e72e4"><%:Compile_noodles %></td><td style="color:orangered" onclick="window.open('https://github.com/HDragon8/noodles')"><%=luci.sys.exec("cat /etc/Compile_noodles") or " "%></td></tr>
 
 	</table>
 </fieldset>
