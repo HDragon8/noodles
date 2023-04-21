@@ -10196,6 +10196,7 @@ erni
 ero-anime.net
 ero-comic-hunter.net
 ero-kawa.com
+ero-labs.cloud
 ero-labs.com
 ero-labs.net
 ero-labs.online
@@ -10230,6 +10231,7 @@ erolabs.cloud
 erolabs.com
 erolabs.game
 erolabs.net
+erolabs.online
 erolord.com
 eromanga-ace.com
 eromanga-cafe.com
@@ -33907,6 +33909,7 @@ full:statics-marketingsites-wcus-ms-com.akamaized.net
 full:steambroadcast.akamaized.net
 full:steamcdn-a.akamaihd.net
 full:steamcommunity-a.akamaihd.net
+full:steammobile.akamaized.net
 full:steampipe-kr.akamaized.net
 full:steampipe-partner.akamaized.net
 full:steampipe.akamaized.net
