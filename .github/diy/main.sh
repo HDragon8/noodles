@@ -135,6 +135,7 @@ svn export https://github.com/immortalwrt/luci/trunk/applications/luci-app-goweb
 svn export https://github.com/immortalwrt/packages/trunk/net/gowebdav
 
 #NAS xunlei
+rm -rf luci-app-xunlei
 git_sparse_clone main "https://github.com/gngpp/nas-xunlei" "nasxunlei" openwrt/xunlei openwrt/luci-app-xunlei
 
 git_sparse_clone master "https://github.com/immortalwrt/packages" "immpack" utils/filebrowser \
