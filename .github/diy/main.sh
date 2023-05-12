@@ -130,9 +130,12 @@ svn export https://github.com/sbilly/netmaker-openwrt/trunk/netmaker
 svn export https://github.com/openwrt/packages/trunk/net/shadowsocks-libev
 svn export https://github.com/immortalwrt/luci/trunk/applications/luci-app-timewol
 #svn export https://github.com/immortalwrt/luci/trunk/applications/luci-app-unblockneteasemusic
-svn export https://github.com/immortalwrt/luci/trunk/applications/luci-app-xunlei
+#svn export https://github.com/immortalwrt/luci/trunk/applications/luci-app-xunlei
 svn export https://github.com/immortalwrt/luci/trunk/applications/luci-app-gowebdav
 svn export https://github.com/immortalwrt/packages/trunk/net/gowebdav
+
+#NAS xunlei
+git_sparse_clone main "https://github.com/gngpp/nas-xunlei" "nasxunlei" openwrt/xunlei openwrt/luci-app-xunlei
 
 git_sparse_clone master "https://github.com/immortalwrt/packages" "immpack" utils/filebrowser \
 net/cdnspeedtest
@@ -161,7 +164,7 @@ sed -i "/minisign:minisign/d" luci-app-dnscrypt-proxy2/Makefile
 sed -i 's/+libcap /+libcap +libcap-bin /' luci-app-openclash/Makefile
 sed -i 's/\(+luci-compat\)/\1 +luci-theme-argon/' luci-app-argon-config/Makefile
 sed -i 's/\(+luci-compat\)/\1 +luci-theme-design/' luci-app-design-config/Makefile
-sed -i 's/\(+luci-compat\)/\1 +luci-theme-argonne/' luci-app-argonne-config/Makefile
+#sed -i 's/\(+luci-compat\)/\1 +luci-theme-argonne/' luci-app-argonne-config/Makefile
 sed -i 's/ +uhttpd-mod-ubus//' luci-app-packet-capture/Makefile
 sed -i 's/	ip.neighbors/	luci.ip.neighbors/' luci-app-wifidog/luasrc/model/cbi/wifidog/wifidog_cfg.lua
 sed -i -e 's/nas/services/g' -e 's/NAS/Services/g' $(grep -rl 'nas\|NAS' luci-app-fileassistant)
