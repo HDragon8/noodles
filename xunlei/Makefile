@@ -2,7 +2,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=xunlei
 
-PKG_VERSION:=3.8.0-21
+PKG_VERSION:=3.8.0-23
 
 PKG_LICENSE:=MIT
 PKG_MAINTAINER:=gngpp <gngppz@gmail.com>
@@ -68,6 +68,7 @@ define Package/$(PKG_NAME)/install
 	$(INSTALL_DIR) $(1)/usr/share/xunlei
 	$(INSTALL_DIR) $(1)/usr/share/xunlei/target
 	$(INSTALL_DIR) $(1)/usr/share/xunlei/target/host
+	$(INSTALL_DIR) $(1)/usr/share/xunlei/target/etc
 	$(CP) $(PKG_BUILD_DIR)/bin/* $(1)/usr/share/xunlei/target/
 
 	$(INSTALL_DIR) $(1)/etc/init.d
