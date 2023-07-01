@@ -86,7 +86,7 @@ git clone --depth 1 https://github.com/Huangjoe123/luci-app-eqos
 git clone --depth 1 https://github.com/sirpdboy/luci-app-lucky
 #git clone --depth 1 https://github.com/sirpdboy/luci-app-lucky lucik && mv -n lucik/luci-app-lucky ./ ; rm -rf lucik
 git clone --depth 1 https://github.com/Hyy2001X/AutoBuild-Packages && rm -rf AutoBuild-Packages/luci-app-adguardhome && mvdir AutoBuild-Packages
-git clone --depth 1 https://github.com/sirpdboy/luci-app-ddns-go ddns-go && mvdir ddns-go
+git clone --depth 1 https://github.com/sirpdboy/luci-app-ddns-go ddns-go1 && mvdir ddns-go1
 #git_clone https://github.com/sirpdboy/netspeedtest && mv -n netspeedtest/luci-app-netspeedtest ./ ; rm -rf netspeedtest
 git clone --depth 1 https://github.com/sirpdboy/netspeedtest && mvdir netspeedtest
 git clone --depth 1 https://github.com/HDragon8/add_openwrt_Build_name
@@ -98,6 +98,8 @@ git clone --depth 1 https://github.com/esirplayground/LingTiGameAcc
 git clone --depth 1 https://github.com/esirplayground/luci-app-LingTiGameAcc
 git clone --depth 1 -b master https://github.com/UnblockNeteaseMusic/luci-app-unblockneteasemusic
 git clone --depth 1 https://github.com/AlexZhuo/luci-app-bandwidthd
+
+#svn export https://github.com/sirpdboy/luci-app-ddns-go/trunk/ddns-go
 
 #svn export https://github.com/coolsnowwolf/luci/trunk/libs/luci-lib-ipkg
 svn export https://github.com/kiddin9/openwrt-packages/trunk/luci-app-fileassistant
