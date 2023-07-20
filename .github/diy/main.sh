@@ -93,7 +93,7 @@ git clone --depth 1 https://github.com/HDragon8/add_openwrt_Build_name
 git clone --depth 1 https://github.com/gngpp/luci-app-design-config
 git clone --depth 1 https://github.com/gngpp/luci-theme-design
 git clone --depth 1 -b 18.06 https://github.com/jerrykuku/luci-theme-argon
-git clone --depth 1 https://github.com/jerrykuku/luci-app-argon-config
+git clone --depth 1 -b 18.06 https://github.com/jerrykuku/luci-app-argon-config
 git clone --depth 1 https://github.com/esirplayground/LingTiGameAcc
 git clone --depth 1 https://github.com/esirplayground/luci-app-LingTiGameAcc
 git clone --depth 1 -b master https://github.com/UnblockNeteaseMusic/luci-app-unblockneteasemusic
