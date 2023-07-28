@@ -1,40 +1,40 @@
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2023-07-25 09:06+0000\n"
-"Last-Translator: random r <epsilin@yopmail.com>\n"
-"Language-Team: Italian <https://hosted.weblate.org/projects/openwrt/"
-"luciapplicationsnft-qos/it/>\n"
-"Language: it\n"
 "Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: PACKAGE VERSION\n"
+"Last-Translator: Automatically generated\n"
+"Language-Team: none\n"
+"Language: lt\n"
+"MIME-Version: 1.0\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.0-dev\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"(n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 #: applications/luci-app-nft-qos/luasrc/view/nft-qos/rate.htm:136
 #: applications/luci-app-nft-qos/luasrc/view/nft-qos/rate.htm:155
 msgid "Bytes Total"
-msgstr "Bytes totali"
+msgstr ""
 
 #: applications/luci-app-nft-qos/luasrc/view/nft-qos/rate.htm:141
 #: applications/luci-app-nft-qos/luasrc/view/nft-qos/rate.htm:160
 msgid "Collecting data..."
-msgstr "Raccolta dei dati..."
+msgstr ""
 
 #: applications/luci-app-nft-qos/luasrc/model/cbi/nft-qos/nft-qos.lua:229
 msgid "Comment"
-msgstr "Commento"
+msgstr ""
 
 #: applications/luci-app-nft-qos/luasrc/model/cbi/nft-qos/nft-qos.lua:50
 msgid "Default Download Rate"
-msgstr "Velocità di download predefinita"
+msgstr ""
 
 #: applications/luci-app-nft-qos/luasrc/model/cbi/nft-qos/nft-qos.lua:55
 msgid "Default Download Unit"
-msgstr "Unita di Download Predefinita"
+msgstr ""
 
 #: applications/luci-app-nft-qos/luasrc/model/cbi/nft-qos/nft-qos.lua:116
 msgid "Default Network Interface"
-msgstr "Interfaccia di rete predefinita"
+msgstr ""
 
 #: applications/luci-app-nft-qos/luasrc/model/cbi/nft-qos/nft-qos.lua:62
 msgid "Default Upload Rate"
@@ -98,12 +98,12 @@ msgstr ""
 #: applications/luci-app-nft-qos/luasrc/model/cbi/nft-qos/nft-qos.lua:163
 #: applications/luci-app-nft-qos/luasrc/model/cbi/nft-qos/nft-qos.lua:244
 msgid "Hostname"
-msgstr "Nome host"
+msgstr ""
 
 #: applications/luci-app-nft-qos/luasrc/view/nft-qos/rate.htm:134
 #: applications/luci-app-nft-qos/luasrc/view/nft-qos/rate.htm:153
 msgid "IP Address"
-msgstr "Indirizzo IP"
+msgstr ""
 
 #: applications/luci-app-nft-qos/luasrc/model/cbi/nft-qos/nft-qos.lua:135
 #: applications/luci-app-nft-qos/luasrc/model/cbi/nft-qos/nft-qos.lua:168
@@ -142,7 +142,7 @@ msgstr ""
 
 #: applications/luci-app-nft-qos/luasrc/model/cbi/nft-qos/nft-qos.lua:248
 msgid "MAC Address"
-msgstr "Indirizzo MAC"
+msgstr ""
 
 #: applications/luci-app-nft-qos/luasrc/view/nft-qos/rate.htm:48
 msgid "MB"
@@ -166,7 +166,7 @@ msgstr ""
 
 #: applications/luci-app-nft-qos/luasrc/view/nft-qos/rate.htm:65
 msgid "No information available"
-msgstr "Nessuna informazione disponibile"
+msgstr ""
 
 #: applications/luci-app-nft-qos/luasrc/view/nft-qos/rate.htm:137
 #: applications/luci-app-nft-qos/luasrc/view/nft-qos/rate.htm:156
@@ -175,11 +175,11 @@ msgstr ""
 
 #: applications/luci-app-nft-qos/luasrc/model/cbi/nft-qos/nft-qos.lua:212
 msgid "Priority"
-msgstr "Priorità"
+msgstr ""
 
 #: applications/luci-app-nft-qos/luasrc/model/cbi/nft-qos/nft-qos.lua:204
 msgid "Protocol"
-msgstr "Protocollo"
+msgstr ""
 
 #: applications/luci-app-nft-qos/luasrc/controller/nft-qos.lua:21
 #: applications/luci-app-nft-qos/luasrc/model/cbi/nft-qos/nft-qos.lua:24
@@ -206,7 +206,7 @@ msgstr ""
 
 #: applications/luci-app-nft-qos/luasrc/model/cbi/nft-qos/nft-qos.lua:226
 msgid "Service"
-msgstr "Servizio"
+msgstr ""
 
 #: applications/luci-app-nft-qos/luasrc/model/cbi/nft-qos/nft-qos.lua:125
 msgid "Static QoS-Download Rate"
@@ -245,7 +245,7 @@ msgstr ""
 #: applications/luci-app-nft-qos/luasrc/model/cbi/nft-qos/nft-qos.lua:257
 #: applications/luci-app-nft-qos/luasrc/model/cbi/nft-qos/nft-qos.lua:268
 msgid "Unit"
-msgstr "Unità"
+msgstr ""
 
 #: applications/luci-app-nft-qos/luasrc/model/cbi/nft-qos/nft-qos.lua:82
 msgid "Upload Bandwidth (Mbps)"
