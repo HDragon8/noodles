@@ -544,6 +544,7 @@ addtoany.com
 addyoutube.com
 adelaidebbs.com
 adgoogle.net
+adguard-dns.com
 adguard-vpn.com
 adguard.com
 adhelpnews.com
@@ -1410,6 +1411,7 @@ aramco
 arcadewank.com
 arcgis.com
 arcgisonline.com
+archive-it.org
 archive.org
 archive.today
 archiveofourown.com
@@ -3816,6 +3818,7 @@ cloudconvert.com
 cloudcraze.com
 cloudcredibility.com
 cloudflare-dns.com
+cloudflare-gateway.com
 cloudflare-ipfs.com
 cloudflare-quic.com
 cloudflare.com
@@ -3826,6 +3829,7 @@ cloudflarebolt.com
 cloudflareclient.com
 cloudflareinsights.com
 cloudflareok.com
+cloudflareportal.com
 cloudflarepreview.com
 cloudflareresolve.com
 cloudflaressl.com
@@ -12187,6 +12191,8 @@ onefifteen.net
 onefifteen.org
 onejapanese.com
 onejav.com
+onekey-asset.com
+onekeycn.com
 onenote.com
 onenote.net
 onepornlist.com
@@ -12263,6 +12269,7 @@ opengw.net
 openid.net
 openjsf.org
 openleaks.org
+openlibrary.org
 openmaps.org
 openmidas.com
 openresty.org
@@ -12809,6 +12816,8 @@ pieceofplastic.com
 pifpafarabia.com
 pigav.com
 pikabu.monster
+pikpak.me
+pikpakdrive.com
 pillbeatsblackfridaysale.com
 pin-cong.com
 pin6.com
@@ -18831,6 +18840,7 @@ full:nurofensk-prod-env.eu-west-1.elasticbeanstalk.com
 full:nvidia.tt.omtrdc.net
 full:ocsp.microsoft.com
 full:officecdn-microsoft-com.akamaized.net
+full:onekey.zendesk.com
 full:oneocsp.microsoft.com
 full:ood.opsource.net
 full:openaiapi-site.azureedge.net
