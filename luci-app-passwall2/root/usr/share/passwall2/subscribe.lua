@@ -23,8 +23,8 @@ uci:revert(appname)
 
 local has_ss = api.is_finded("ss-redir")
 local has_ss_rust = api.is_finded("sslocal")
-local has_v2ray = api.is_finded("v2ray")
-local has_xray = api.is_finded("xray")
+local has_singbox = api.finded_com("singbox")
+local has_xray = api.finded_com("xray")
 local allowInsecure_default = true
 local ss_aead_type_default = uci:get(appname, "@global_subscribe[0]", "ss_aead_type") or "shadowsocks-libev"
 -- 判断是否过滤节点关键字
@@ -299,8 +299,10 @@ do
 				end
 			end
 		else
-			if v.currentNode == nil and v.delete then
-				v.delete()
+			if v.currentNode == nil then
+				if v.delete then
+					v.delete()
+				end
 				CONFIG[k] = nil
 			end
 		end
@@ -385,9 +387,11 @@ local function processData(szType, content, add_mode, add_from)
 		result.remarks = base64Decode(params.remarks)
 	elseif szType == 'vmess' then
 		local info = jsonParse(content)
-		result.type = 'V2ray'
 		if has_xray then
 			result.type = 'Xray'
+		end
+		if has_singbox then
+			result.type = 'sing-box'
 		end
 		result.address = info.add
 		result.port = info.port
@@ -530,13 +534,9 @@ local function processData(szType, content, add_mode, add_from)
 					if method:lower() == "chacha20-poly1305" then
 						result.method = "chacha20-ietf-poly1305"
 					end
-				elseif ss_aead_type_default == "v2ray" and has_v2ray and not result.plugin then
-					result.type = 'V2ray'
+				elseif ss_aead_type_default == "sing-box" and has_singbox and not result.plugin then
+					result.type = 'sing-box'
 					result.protocol = 'shadowsocks'
-					result.transport = 'tcp'
-					if method:lower() == "chacha20-ietf-poly1305" then
-						result.method = "chacha20-poly1305"
-					end
 				elseif ss_aead_type_default == "xray" and has_xray and not result.plugin then
 					result.type = 'Xray'
 					result.protocol = 'shadowsocks'
@@ -555,9 +555,11 @@ local function processData(szType, content, add_mode, add_from)
 			content = content:sub(0, idx_sp - 1)
 		end
 		result.remarks = UrlDecode(alias)
-		result.type = 'V2ray'
 		if has_xray then
 			result.type = 'Xray'
+		end
+		if has_singbox then
+			result.type = 'sing-box'
 		end
 		result.protocol = 'trojan'
 		if content:find("@") then
@@ -620,9 +622,11 @@ local function processData(szType, content, add_mode, add_from)
 		result.group = content.airport
 		result.remarks = content.remarks
 	elseif szType == "vless" then
-		result.type = 'V2ray'
 		if has_xray then
 			result.type = 'Xray'
+		end
+		if has_singbox then
+			result.type = 'sing-box'
 		end
 		result.protocol = "vless"
 		local alias = ""
@@ -697,10 +701,11 @@ local function processData(szType, content, add_mode, add_from)
 			
 			result.encryption = params.encryption or "none"
 
+			result.flow = params.flow or nil
+
 			result.tls = "0"
 			if params.security == "tls" or params.security == "reality" then
 				result.tls = "1"
-				result.tlsflow = params.flow or nil
 				result.tls_serverName = (params.sni and params.sni ~= "") and params.sni or params.host
 				result.fingerprint = (params.fp and params.fp ~= "") and params.fp or "chrome"
 				if params.security == "reality" then
@@ -793,7 +798,7 @@ local function truncate_nodes(add_from)
 			end
 			config.set(config)
 		else
-			if config.currentNode.add_mode == "2" then
+			if config.currentNode and config.currentNode.add_mode == "2" then
 				if add_from then
 					if config.currentNode.add_from and config.currentNode.add_from == add_from then
 						config.set(config, "nil")
@@ -933,7 +938,7 @@ local function select_node(nodes, config)
 			config.set(config, server)
 		end
 	else
-		config.set(config, nil)
+		config.set(config, "nil")
 	end
 end
 
