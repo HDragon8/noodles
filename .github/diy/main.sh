@@ -151,6 +151,10 @@ git_sparse_clone develop "https://github.com/Ysurac/openmptcprouter-feeds" "enmp
 luci-app-packet-capture luci-app-mail msmtp
 git_sparse_clone master "https://github.com/x-wrt/com.x-wrt" "x-wrt" natflow lua-ipops luci-app-macvlan
 
+#netdata
+rm -rf luci-app-netdata
+git clone --depth 1 https://github.com/sirpdboy/luci-app-netdata
+
 #mv -n openwrt-passwall/* ./ ; rm -Rf openwrt-passwall
 mv -n openwrt-package/* ./ ; rm -Rf openwrt-package
 
