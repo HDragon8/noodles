@@ -93,6 +93,12 @@ function gen_outbound(flag, node, tag, proxy_table)
 				alpn = alpn, --支持的应用层协议协商列表，按优先顺序排列。如果两个对等点都支持 ALPN，则选择的协议将是此列表中的一个，如果没有相互支持的协议则连接将失败。
 				--min_version = "1.2",
 				--max_version = "1.3",
+				ech = {
+					enabled = (node.ech == "1") and true or false,
+					config = (node.ech_config and node.ech_config:gsub("\\n","\n")) and node.ech_config:gsub("\\n","\n") or nil,
+					pq_signature_schemes_enabled = node.pq_signature_schemes_enabled and true or false,
+					dynamic_record_sizing_disabled = node.dynamic_record_sizing_disabled and true or false
+				},
 				utls = {
 					enabled = (node.utls == "1" or node.reality == "1") and true or false,
 					fingerprint = node.fingerprint or "chrome"
@@ -282,7 +288,13 @@ function gen_outbound(flag, node, tag, proxy_table)
 					insecure = (node.tls_allowInsecure == "1") and true or false,
 					alpn = (node.hysteria_alpn and node.hysteria_alpn ~= "") and {
 						node.hysteria_alpn
-					} or nil
+					} or nil,
+					ech = {
+						enabled = (node.ech == "1") and true or false,
+						config = (node.ech_config and node.ech_config:gsub("\\n","\n")) and node.ech_config:gsub("\\n","\n") or nil,
+						pq_signature_schemes_enabled = node.pq_signature_schemes_enabled and true or false,
+						dynamic_record_sizing_disabled = node.dynamic_record_sizing_disabled and true or false
+					}
 				}
 			}
 		end
@@ -311,7 +323,13 @@ function gen_outbound(flag, node, tag, proxy_table)
 					alpn = (node.tuic_alpn and node.tuic_alpn ~= "") and {
 						node.tuic_alpn
 					} or nil,
-				},
+					ech = {
+						enabled = (node.ech == "1") and true or false,
+						config = (node.ech_config and node.ech_config:gsub("\\n","\n")) and node.ech_config:gsub("\\n","\n") or nil,
+						pq_signature_schemes_enabled = node.pq_signature_schemes_enabled and true or false,
+						dynamic_record_sizing_disabled = node.dynamic_record_sizing_disabled and true or false
+					}
+				}
 			}
 		end
 
@@ -328,7 +346,13 @@ function gen_outbound(flag, node, tag, proxy_table)
 					enabled = true,
 					server_name = node.tls_serverName,
 					insecure = (node.tls_allowInsecure == "1") and true or false,
-				},
+					ech = {
+						enabled = (node.ech == "1") and true or false,
+						config = (node.ech_config and node.ech_config:gsub("\\n","\n")) and node.ech_config:gsub("\\n","\n") or nil,
+						pq_signature_schemes_enabled = node.pq_signature_schemes_enabled and true or false,
+						dynamic_record_sizing_disabled = node.dynamic_record_sizing_disabled and true or false
+					}
+				}
 			}
 		end
 
@@ -366,6 +390,15 @@ function gen_config_server(node)
 				server = node.reality_handshake_server,
 				server_port = tonumber(node.reality_handshake_server_port)
 			}
+		}
+	end
+
+	if node.tls == "1" and node.ech == "1" then
+		tls.ech = {
+			enabled = true,
+			key = (node.ech_key and node.ech_key:gsub("\\n","\n")) and node.ech_key:gsub("\\n","\n") or nil,
+			pq_signature_schemes_enabled = (node.pq_signature_schemes_enabled == "1") and true or false,
+			dynamic_record_sizing_disabled = (node.dynamic_record_sizing_disabled == "1") and true or false,
 		}
 	end
 
@@ -687,6 +720,7 @@ function gen_config(var)
 	local remote_dns_doh_host = var["-remote_dns_doh_host"]
 	local remote_dns_doh_ip = var["-remote_dns_doh_ip"]
 	local remote_dns_doh_port = var["-remote_dns_doh_port"]
+	local remote_dns_detour = var["-remote_dns_detour"]
 	local remote_dns_query_strategy = var["-remote_dns_query_strategy"]
 	local remote_dns_fake = var["-remote_dns_fake"]
 	local dns_cache = var["-dns_cache"]
@@ -1162,6 +1196,10 @@ function gen_config(var)
 			remote_strategy = "ipv6_only"
 		end
 
+		if remote_dns_detour == "direct" then
+			default_outTag = "direct"
+		end
+
 		local remote_server = {
 			tag = "remote",
 			address_strategy = "prefer_ipv4",
@@ -1271,7 +1309,7 @@ function gen_config(var)
 					}
 					if value.outboundTag ~= "block" and value.outboundTag ~= "direct" then
 						dns_rule.server = "remote"
-						if value.outboundTag ~= "default" and remote_server.address then
+						if value.outboundTag ~= "default" and remote_server.address and remote_server.detour ~= "direct" then
 							local remote_dns_server = api.clone(remote_server)
 							remote_dns_server.tag = value.outboundTag
 							remote_dns_server.detour = value.outboundTag
@@ -1452,6 +1490,7 @@ function gen_dns_config(var)
 	local remote_dns_doh_host = var["-remote_dns_doh_host"]
 	local remote_dns_doh_ip = var["-remote_dns_doh_ip"]
 	local remote_dns_doh_port = var["-remote_dns_doh_port"]
+	local remote_dns_detour = var["-remote_dns_detour"]
 	local remote_dns_outbound_socks_address = var["-remote_dns_outbound_socks_address"]
 	local remote_dns_outbound_socks_port = var["-remote_dns_outbound_socks_port"]
 	local dns_cache = var["-dns_cache"]
@@ -1477,13 +1516,34 @@ function gen_dns_config(var)
 			independent_cache = false, --使每个 DNS 服务器的缓存独立，以满足特殊目的。如果启用，将轻微降低性能。
 			reverse_mapping = true, --在响应 DNS 查询后存储 IP 地址的反向映射以为路由目的提供域名。
 		}
-	
+
 		if dns_out_tag == "remote" then
+			local out_tag = nil
+			if remote_dns_detour == "direct" then
+				out_tag = "direct-out"
+				table.insert(outbounds, 1, {
+					type = "direct",
+					tag = out_tag,
+					routing_mark = 255,
+					domain_strategy = (dns_query_strategy and dns_query_strategy ~= "UseIP") and "ipv4_only" or "prefer_ipv6",
+				})
+			else
+				if remote_dns_outbound_socks_address and remote_dns_outbound_socks_port then
+					out_tag = "remote-out"
+					table.insert(outbounds, 1, {
+						type = "socks",
+						tag = out_tag,
+						server = remote_dns_outbound_socks_address,
+						server_port = tonumber(remote_dns_outbound_socks_port),
+					})
+				end
+			end
+
 			local server = {
 				tag = dns_out_tag,
 				address_strategy = "prefer_ipv4",
 				strategy = (dns_query_strategy and dns_query_strategy ~= "UseIP") and "ipv4_only" or "prefer_ipv6",
-				detour = "remote-out",
+				detour = out_tag,
 			}
 	
 			if remote_dns_udp_server then
@@ -1502,21 +1562,21 @@ function gen_dns_config(var)
 	
 			table.insert(dns.servers, server)
 
+			route.final = out_tag
+		elseif dns_out_tag == "direct" then
+			local out_tag = "direct-out"
 			table.insert(outbounds, 1, {
-				type = "socks",
-				tag = "remote-out",
-				server = remote_dns_outbound_socks_address,
-				server_port = tonumber(remote_dns_outbound_socks_port),
+				type = "direct",
+				tag = out_tag,
+				routing_mark = 255,
+				domain_strategy = (dns_query_strategy and dns_query_strategy ~= "UseIP") and "ipv4_only" or "prefer_ipv6",
 			})
 
-			route.final = "remote-out"
-
-		elseif dns_out_tag == "direct" then
 			local server = {
 				tag = dns_out_tag,
 				address_strategy = "prefer_ipv6",
 				strategy = (dns_query_strategy and dns_query_strategy ~= "UseIP") and "ipv4_only" or "prefer_ipv6",
-				detour = "direct-out",
+				detour = out_tag,
 			}
 	
 			if direct_dns_udp_server then
@@ -1534,13 +1594,8 @@ function gen_dns_config(var)
 			end
 	
 			table.insert(dns.servers, server)
-	
-			table.insert(outbounds, 1, {
-				type = "direct",
-				tag = "direct-out",
-				routing_mark = 255,
-				domain_strategy = (dns_query_strategy and dns_query_strategy ~= "UseIP") and "ipv4_only" or "prefer_ipv6",
-			})
+
+			route.final = out_tag
 		end
 
 		table.insert(inbounds, {
