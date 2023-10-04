@@ -3821,6 +3821,7 @@ cloudconvert.com
 cloudcraze.com
 cloudcredibility.com
 cloudflare-dns.com
+cloudflare-ech.com
 cloudflare-gateway.com
 cloudflare-ipfs.com
 cloudflare-quic.com
@@ -7810,6 +7811,7 @@ hentaistube.com
 hentaisub.info
 hentaitalk.com
 hentaitk.com
+hentaitokyo.com
 hentaitube.online
 hentaiverse.org
 hentaivideos.net
@@ -9365,6 +9367,7 @@ jjdong7.com
 jjgirls.com
 jkb.cc
 jkbeats.com
+jkf.net
 jkface.net
 jkforum.net
 jkub.com
@@ -16032,6 +16035,7 @@ tokyo-tosho.net
 tokyocn.com
 tokyomotion.com
 tokyomotion.net
+tokyonightstyle.com
 tokyoporns.com
 tokyotosho.info
 tomatespodres.com
@@ -18771,6 +18775,7 @@ full:brightcove.imgix.net
 full:cbsi.live.ott.irdeto.com
 full:cbsplaylistserver.aws.syncbak.com
 full:cbsservice.aws.syncbak.com
+full:cdn-spotify-experiments.conductrics.com
 full:cdn.jsdelivr.net
 full:cdngarenanow-a.akamaihd.net
 full:chat.openai.com.cdn.cloudflare.net
