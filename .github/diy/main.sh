@@ -20,7 +20,7 @@ git clone --depth 1 -b 18.06 https://github.com/kiddin9/luci-theme-edge
 git clone --depth 1 https://github.com/kiddin9/openwrt-amule-dlp && mvdir openwrt-amule-dlp
 git clone --depth 1 https://github.com/yichya/luci-app-xray
 git clone --depth 1 https://github.com/xiaorouji/openwrt-passwall-packages && mvdir openwrt-passwall-packages
-git clone --depth 1 https://github.com/fw876/helloworld && mvdir helloworld
+git clone --depth 1 -b main https://github.com/fw876/helloworld && mvdir helloworld
 git clone --depth 1 https://github.com/Lienol/openwrt-package
 git clone --depth 1 https://github.com/ysc3839/openwrt-minieap
 git clone --depth 1 https://github.com/ysc3839/luci-proto-minieap
