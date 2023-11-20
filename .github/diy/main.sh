@@ -17,6 +17,7 @@ mv -n `find $1/* -maxdepth 0 -type d` ./
 rm -rf $1
 }
 git clone --depth 1 -b 18.06 https://github.com/kiddin9/luci-theme-edge
+git clone --depth 1 https://github.com/sirpdboy/netspeedtest && mvdir netspeedtest
 git clone --depth 1 https://github.com/kiddin9/openwrt-amule-dlp && mvdir openwrt-amule-dlp
 git clone --depth 1 https://github.com/yichya/luci-app-xray
 git clone --depth 1 https://github.com/xiaorouji/openwrt-passwall-packages && mvdir openwrt-passwall-packages
@@ -88,7 +89,7 @@ git clone --depth 1 https://github.com/sirpdboy/luci-app-lucky
 git clone --depth 1 https://github.com/Hyy2001X/AutoBuild-Packages && rm -rf AutoBuild-Packages/luci-app-adguardhome && mvdir AutoBuild-Packages
 git clone --depth 1 https://github.com/sirpdboy/luci-app-ddns-go ddns-go1 && mvdir ddns-go1
 #git_clone https://github.com/sirpdboy/netspeedtest && mv -n netspeedtest/luci-app-netspeedtest ./ ; rm -rf netspeedtest
-git clone --depth 1 https://github.com/sirpdboy/netspeedtest && mvdir netspeedtest
+#git clone --depth 1 https://github.com/sirpdboy/netspeedtest && mvdir netspeedtest
 git clone --depth 1 https://github.com/HDragon8/add_openwrt_Build_name
 git clone --depth 1 https://github.com/gngpp/luci-app-design-config
 git clone --depth 1 https://github.com/gngpp/luci-theme-design
