@@ -100,6 +100,7 @@ git clone --depth 1 https://github.com/esirplayground/luci-app-LingTiGameAcc
 git clone --depth 1 -b master https://github.com/UnblockNeteaseMusic/luci-app-unblockneteasemusic
 git clone --depth 1 https://github.com/AlexZhuo/luci-app-bandwidthd
 git clone --depth 1 https://github.com/sirpdboy/chatgpt-web
+git clone --depth 1 https://github.com/Diciya/luci-app-broadbandacc
 #aliyun
 git clone --depth 1 https://github.com/messense/aliyundrive-webdav aliyundrive && mv -n aliyundrive/openwrt/* ./ ; rm -rf aliyundrive
 git clone --depth 1 https://github.com/messense/aliyundrive-fuse aliyundrive && mv -n aliyundrive/openwrt/* ./;rm -rf aliyundrive
