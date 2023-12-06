@@ -103,52 +103,39 @@ git clone --depth 1 https://github.com/AlexZhuo/luci-app-bandwidthd
 git clone --depth 1 https://github.com/sirpdboy/chatgpt-web
 git clone --depth 1 https://github.com/Diciya/luci-app-broadbandacc
 #aliyun
-git clone --depth 1 https://github.com/messense/aliyundrive-webdav aliyundrive && mv -n aliyundrive/openwrt/* ./ ; rm -rf aliyundrive
-git clone --depth 1 https://github.com/messense/aliyundrive-fuse aliyundrive && mv -n aliyundrive/openwrt/* ./;rm -rf aliyundrive
+git clone --depth 1 https://github.com/messense/aliyundrive-webdav aliyundrive && mv -n aliyundrive/openwrt/* ./; rm -rf aliyundrive
+git clone --depth 1 https://github.com/messense/aliyundrive-fuse aliyundrive && mv -n aliyundrive/openwrt/* ./; rm -rf aliyundrive
 
-#svn export https://github.com/sirpdboy/luci-app-ddns-go/trunk/ddns-go
+git clone --depth 1 https://github.com/vernesong/OpenClash && mv -n OpenClash/luci-app-openclash ./; rm -rf OpenClash
 
-#svn export https://github.com/coolsnowwolf/luci/trunk/libs/luci-lib-ipkg
-svn export https://github.com/kiddin9/openwrt-packages/trunk/luci-app-fileassistant
-svn export https://github.com/immortalwrt/luci/trunk/applications/luci-app-filebrowser
-svn export https://github.com/immortalwrt/luci/trunk/applications/luci-app-aliddns
-#svn export https://github.com/immortalwrt/packages/trunk/net/smartdns
-svn export https://github.com/Tencent-Cloud-Plugins/tencentcloud-openwrt-plugin-ddns/trunk/tencentcloud_ddns luci-app-tencentddns
-svn export https://github.com/Tencent-Cloud-Plugins/tencentcloud-openwrt-plugin-cos/trunk/tencentcloud_cos luci-app-tencentcloud-cos
-#svn export https://github.com/kiddin9/openwrt-packages/trunk/luci-app-adguardhome
-#svn export https://github.com/kiddin9/openwrt-packages/trunk/adguardhome
-svn export https://github.com/sirpdboy/sirpdboy-package/trunk/adguardhome
-svn export https://github.com/sirpdboy/sirpdboy-package/trunk/luci-app-adguardhome
-svn export https://github.com/kenzok8/litte/trunk/luci-theme-atmaterial_new
-svn export https://github.com/kenzok8/litte/trunk/luci-theme-mcat
-svn export https://github.com/kenzok8/litte/trunk/luci-theme-tomato
-svn export https://github.com/x-wrt/packages/trunk/net/nft-qos
-svn export https://github.com/x-wrt/luci/trunk/applications/luci-app-nft-qos
-svn export https://github.com/kiddin9/openwrt-packages/trunk/luci-app-bypass
-#svn export https://github.com/fw876/helloworld/trunk/sagernet-core
-#svn export https://github.com/fw876/helloworld/trunk/luci-app-ssr-plus
-#svn export https://github.com/fw876/helloworld/trunk/lua-neturl
-#svn export https://github.com/fw876/helloworld/trunk/redsocks2
-#svn export https://github.com/fw876/helloworld/trunk/microsocks
-svn export https://github.com/vernesong/OpenClash/trunk/luci-app-openclash
-svn export https://github.com/mingxiaoyu/luci-app-cloudflarespeedtest/trunk/applications/luci-app-cloudflarespeedtest
-svn export https://github.com/doushang/luci-app-shortcutmenu/trunk/luci-app-shortcutmenu
-svn export https://github.com/Ysurac/openmptcprouter-feeds/trunk/luci-app-iperf
-svn export https://github.com/sbilly/netmaker-openwrt/trunk/netmaker
-#svn export https://github.com/xiaorouji/openwrt-passwall2/trunk/luci-app-passwall2
-svn export https://github.com/openwrt/packages/trunk/net/shadowsocks-libev
-svn export https://github.com/immortalwrt/luci/trunk/applications/luci-app-timewol
-#svn export https://github.com/immortalwrt/luci/trunk/applications/luci-app-unblockneteasemusic
-#svn export https://github.com/immortalwrt/luci/trunk/applications/luci-app-xunlei
-svn export https://github.com/immortalwrt/luci/trunk/applications/luci-app-gowebdav
-svn export https://github.com/immortalwrt/packages/trunk/net/gowebdav
+git clone --depth 1 https://github.com/Tencent-Cloud-Plugins/tencentcloud-openwrt-plugin-ddns && mv -n tencentcloud-openwrt-plugin-ddns/tencentcloud_ddns ./luci-app-tencentddns; rm -rf tencentcloud-openwrt-plugin-ddns
+git clone --depth 1 https://github.com/Tencent-Cloud-Plugins/tencentcloud-openwrt-plugin-cos && mv -n tencentcloud-openwrt-plugin-cos/tencentcloud_ddns ./luci-app-tencentcloud-cos; rm -rf tencentcloud-openwrt-plugin-cos
+
+git clone --depth 1 https://github.com/doushang/luci-app-shortcutmenu && mv -n luci-app-shortcutmenu/luci-app-shortcutmenu ./; rm -rf luci-app-shortcutmenu
+git clone --depth 1 https://github.com/sbilly/netmaker-openwrt && mv -n netmaker-openwrt/netmaker ./; rm -rf netmaker-openwrt
+
+git_sparse_clone master "https://github.com/kiddin9/openwrt-packages" "kiddin91" luci-app-fileassistant luci-app-bypass
+git_sparse_clone master "https://github.com/immortalwrt/luci" "immluci1" applications/luci-app-filebrowser applications/luci-app-aliddns \
+applications/luci-app-timewol applications/luci-app-gowebdav
+git_sparse_clone main "https://github.com/sirpdboy/sirpdboy-package" "sirpdboypack" adguardhome luci-app-adguardhome
+git_sparse_clone master "https://github.com/x-wrt/packages" "x-wrtpack" net/nft-qos
+git_sparse_clone master "https://github.com/x-wrt/luci" "x-wrtluci" applications/luci-app-nft-qos
+#svn export https://github.com/Tencent-Cloud-Plugins/tencentcloud-openwrt-plugin-ddns/trunk/tencentcloud_ddns luci-app-tencentddns
+#svn export https://github.com/Tencent-Cloud-Plugins/tencentcloud-openwrt-plugin-cos/trunk/tencentcloud_cos luci-app-tencentcloud-cos
+
+#svn export https://github.com/mingxiaoyu/luci-app-cloudflarespeedtest/trunk/applications/luci-app-cloudflarespeedtest
+#svn export https://github.com/doushang/luci-app-shortcutmenu/trunk/luci-app-shortcutmenu
+#svn export https://github.com/Ysurac/openmptcprouter-feeds/trunk/luci-app-iperf
+#svn export https://github.com/sbilly/netmaker-openwrt/trunk/netmaker
+#svn export https://github.com/openwrt/packages/trunk/net/shadowsocks-libev
+git_sparse_clone master "https://github.com/openwrt/packages" "opack" net/shadowsocks-libev
 
 #NAS xunlei
 rm -rf luci-app-xunlei
 git_sparse_clone main "https://github.com/gngpp/nas-xunlei" "nasxunlei" openwrt/xunlei openwrt/luci-app-xunlei
 
 git_sparse_clone master "https://github.com/immortalwrt/packages" "immpack" utils/filebrowser \
-net/cdnspeedtest
+net/cdnspeedtest net/gowebdav
 
 git_sparse_clone develop "https://github.com/Ysurac/openmptcprouter-feeds" "enmptcp" luci-app-snmpd \
 luci-app-packet-capture luci-app-mail msmtp
