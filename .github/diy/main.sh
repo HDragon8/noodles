@@ -21,7 +21,8 @@ git clone --depth 1 https://github.com/sirpdboy/netspeedtest && mvdir netspeedte
 git clone --depth 1 https://github.com/kiddin9/openwrt-amule-dlp && mvdir openwrt-amule-dlp
 git clone --depth 1 https://github.com/yichya/luci-app-xray
 git clone --depth 1 https://github.com/xiaorouji/openwrt-passwall-packages && mvdir openwrt-passwall-packages
-git clone --depth 1 -b main https://github.com/fw876/helloworld && mvdir helloworld
+#git clone --depth 1 -b main https://github.com/fw876/helloworld && mvdir helloworld
+git clone --depth 1 https://github.com/fw876/helloworld && mvdir helloworld
 git clone --depth 1 https://github.com/Lienol/openwrt-package
 git clone --depth 1 https://github.com/ysc3839/openwrt-minieap
 git clone --depth 1 https://github.com/ysc3839/luci-proto-minieap
@@ -72,7 +73,8 @@ git clone --depth 1 https://github.com/gdck/luci-app-cupsd cupsd1 && mv -n cupsd
 #------mosdns---------
 #git clone --depth 1 https://github.com/QiuSimons/openwrt-mos && mv -n openwrt-mos/*mosdns ./ ; rm -rf openwrt-mos
 rm -rf v2ray-geodata
-git clone --depth 1 -b v5 https://github.com/sbwml/luci-app-mosdns mosdns
+rm -rf mosdns && rm -rf luci-app-mosdns
+git clone --depth 1 -b v5 https://github.com/sbwml/luci-app-mosdns openwrt-mos && mv -n openwrt-mos/{*mosdns,v2dat} ./; rm -rf openwrt-mos
 git clone --depth 1 https://github.com/sbwml/v2ray-geodata
 
 git clone --depth 1 https://github.com/peter-tank/luci-app-fullconenat
@@ -136,9 +138,9 @@ git_sparse_clone master "https://github.com/x-wrt/luci" "x-wrtluci" applications
 #svn export https://github.com/openwrt/packages/trunk/net/shadowsocks-libev
 git_sparse_clone master "https://github.com/openwrt/packages" "opack" net/shadowsocks-libev
 
-#NAS xunlei
-rm -rf luci-app-xunlei
-git_sparse_clone main "https://github.com/gngpp/nas-xunlei" "nasxunlei" openwrt/xunlei openwrt/luci-app-xunlei
+#thunder
+rm -rf luci-app-thunder
+git_sparse_clone main "https://github.com/gngpp/thunder" "thunder1" openwrt/thunder openwrt/luci-app-thunder
 
 git_sparse_clone master "https://github.com/immortalwrt/packages" "immpack" utils/filebrowser \
 net/cdnspeedtest net/gowebdav
