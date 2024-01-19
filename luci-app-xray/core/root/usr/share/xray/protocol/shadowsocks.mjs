@@ -15,6 +15,7 @@ export function shadowsocks_outbound(server, tag) {
                     {
                         address: server["server"],
                         port: int(server["server_port"]),
+                        email: server["username"],
                         password: server["password"],
                         method: server["shadowsocks_security"],
                         uot: server["shadowsocks_udp_over_tcp"] == '1'
