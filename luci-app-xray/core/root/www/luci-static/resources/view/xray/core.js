@@ -243,14 +243,6 @@ return view.extend({
 
         s.tab('inbounds', _('Inbounds'));
 
-        o = s.taboption('inbounds', form.Value, 'socks_port', _('Socks5 proxy port'));
-        o.datatype = 'port';
-        o.placeholder = 1080;
-
-        o = s.taboption('inbounds', form.Value, 'http_port', _('HTTP proxy port'));
-        o.datatype = 'port';
-        o.placeholder = 1081;
-
         o = s.taboption('inbounds', form.Value, 'tproxy_port_tcp_v4', _('Transparent proxy port (TCP4)'));
         o.datatype = 'port';
         o.placeholder = 1082;
@@ -292,7 +284,17 @@ return view.extend({
         inbound_type.value("tproxy_udp", _("Transparent Proxy (UDP)"));
         inbound_type.rmempty = false;
 
-        let specify_outbound = extra_inbounds.option(form.Flag, 'specify_outbound', _('Specify Outbound'), _('If not selected, this inbound will use global settings (including sniffing settings). '));
+        let inbound_username = extra_inbounds.option(form.Value, "inbound_username", _("Username (Optional)"));
+        inbound_username.depends("inbound_type", "socks5");
+        inbound_username.depends("inbound_type", "http");
+        inbound_username.modalonly = true;
+
+        let inbound_password = extra_inbounds.option(form.Value, "inbound_password", _("Password (Optional)"));
+        inbound_password.depends("inbound_type", "socks5");
+        inbound_password.depends("inbound_type", "http");
+        inbound_password.modalonly = true;
+
+        let specify_outbound = extra_inbounds.option(form.Flag, 'specify_outbound', _('Specify Outbound'), _('If not selected, this inbound will use global settings (including sniffing settings).'));
         specify_outbound.modalonly = true;
 
         let destination = extra_inbounds.option(form.MultiValue, 'destination', _('Destination'), _("Select multiple outbounds for load balancing. If none selected, requests will be sent via direct outbound."));
@@ -301,6 +303,7 @@ return view.extend({
         destination.textvalue = destination_format(config_data, "destination", 60, true);
 
         let balancer_strategy = extra_inbounds.option(form.Value, 'balancer_strategy', _('Balancer Strategy'), _('Strategy <code>leastPing</code> requires observatory (see "Extra Options" tab) to be enabled.'));
+        balancer_strategy.depends("specify_outbound", "1");
         balancer_strategy.value("random");
         balancer_strategy.value("leastPing");
         balancer_strategy.value("roundRobin");
