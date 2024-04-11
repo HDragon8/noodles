@@ -124,7 +124,7 @@ git clone --depth 1 https://github.com/sbilly/netmaker-openwrt && mv -n netmaker
 
 git_sparse_clone master "https://github.com/kiddin9/openwrt-packages" "kiddin91" luci-app-fileassistant luci-app-bypass
 git_sparse_clone master "https://github.com/immortalwrt/luci" "immluci1" applications/luci-app-filebrowser applications/luci-app-aliddns \
-applications/luci-app-timewol applications/luci-app-gowebdav
+applications/luci-app-timewol applications/luci-app-gowebdav applications/luci-app-dufs
 git_sparse_clone main "https://github.com/sirpdboy/sirpdboy-package" "sirpdboypack" adguardhome luci-app-adguardhome
 git_sparse_clone master "https://github.com/x-wrt/packages" "x-wrtpack" net/nft-qos
 git_sparse_clone master "https://github.com/x-wrt/luci" "x-wrtluci" applications/luci-app-nft-qos
@@ -143,7 +143,7 @@ rm -rf luci-app-thunder
 git_sparse_clone main "https://github.com/gngpp/thunder" "thunder1" openwrt/thunder openwrt/luci-app-thunder
 
 git_sparse_clone master "https://github.com/immortalwrt/packages" "immpack" utils/filebrowser \
-net/cdnspeedtest net/gowebdav
+net/cdnspeedtest net/gowebdav net/dufs
 
 git_sparse_clone develop "https://github.com/Ysurac/openmptcprouter-feeds" "enmptcp" luci-app-snmpd \
 luci-app-packet-capture luci-app-mail msmtp
