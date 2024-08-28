@@ -105,8 +105,11 @@ git clone --depth 1 https://github.com/ophub/luci-app-amlogic amlogic && mv -n a
 git clone --depth 1 https://github.com/linkease/nas-packages && mv -n nas-packages/{network/services/*,multimedia/*} ./; rm -rf nas-packages
 git clone --depth 1 https://github.com/linkease/nas-packages-luci && mv -n nas-packages-luci/luci/* ./; rm -rf nas-packages-luci
 git clone --depth 1 https://github.com/linkease/istore && mv -n istore/luci/* ./; rm -rf istore
-git clone --depth 1 https://github.com/AlexZhuo/luci-app-bandwidthd
-git clone --depth 1 https://github.com/linkease/openwrt-app-actions
+#git clone --depth 1 https://github.com/AlexZhuo/luci-app-bandwidthd
+git clone --depth 1 https://github.com/Diciya/luci-app-broadbandacc
+git clone --depth 1 https://github.com/gSpotx2f/luci-app-log
+#git clone --depth 1 https://github.com/linkease/openwrt-app-actions
+git clone --depth 1 https://github.com/linkease/openwrt-app-actions && mv -n openwrt-app-actions/applications/* ./;rm -rf openwrt-app-actions
 git clone --depth 1 https://github.com/ZeaKyX/luci-app-speedtest-web
 git clone --depth 1 https://github.com/ZeaKyX/speedtest-web
 git clone --depth 1 https://github.com/Zxilly/UA2F
