@@ -1050,8 +1050,18 @@ function renderNodeSettings(section, data, features, main_node, routing_mode) {
 		o.default = o.disabled;
 		o.modalonly = true;
 
-		o = s.option(form.DynamicList, 'tls_ech_config', _('ECH config'));
+		o = s.option(form.Value, 'tls_ech_config_path', _('ECH config path'),
+			_('The path to the ECH config, in PEM format. If empty, load from DNS will be attempted.'));
+		o.value('/etc/homeproxy/certs/client_ech_conf.pem');
 		o.depends('tls_ech', '1');
+		o.modalonly = true;
+
+		o = s.option(form.Button, '_upload_ech_config', _('Upload ECH config'),
+			_('<strong>Save your configuration before uploading files!</strong>'));
+		o.inputstyle = 'action';
+		o.inputtitle = _('Upload...');
+		o.depends({'tls_ech': '1', 'tls_ech_config_path': '/etc/homeproxy/certs/client_ech_conf.pem'});
+		o.onclick = L.bind(hp.uploadCertificate, this, _('ECH config'), 'client_ech_conf');
 		o.modalonly = true;
 	}
 
@@ -1062,13 +1072,6 @@ function renderNodeSettings(section, data, features, main_node, routing_mode) {
 		o.value('360');
 		o.value('android');
 		o.value('chrome');
-		if (features.version.localeCompare('1.10.0', undefined, { numeric: true, sensitivity: 'base' }) < 0) {
-			o.value('chrome_psk');
-			o.value('chrome_psk_shuffle');
-			o.value('chrome_padding_psk_shuffle');
-			o.value('chrome_pq');
-			o.value('chrome_pq_psk');
-		}
 		o.value('edge');
 		o.value('firefox');
 		o.value('ios');

@@ -10,11 +10,11 @@ include $(TOPDIR)/rules.mk
 PKG_ARCH_VMEASE:=$(ARCH)
 
 PKG_NAME:=vmease
-PKG_VERSION:=0.5.1
+PKG_VERSION:=0.8.5
 PKG_RELEASE:=$(PKG_ARCH_VMEASE)-2
 PKG_SOURCE:=$(PKG_NAME)-binary-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=http://fw0.koolcenter.com/binary/vmease/
-PKG_HASH:=2ca2b8b276702a239f7f937363fcec925e93f687831e0494d231e642a0cd1d4b
+PKG_HASH:=69a002b955850cd5f3b7c836fa3a706a89c149113271fd52dd9427453014c312
 
 PKG_BUILD_DIR:=$(BUILD_DIR)/$(PKG_NAME)-binary-$(PKG_VERSION)
 
@@ -44,6 +44,7 @@ define Package/$(PKG_NAME)/postinst
 #!/bin/sh
 if [ -z "$${IPKG_INSTROOT}" ]; then
 	[ -f /etc/uci-defaults/vmease ] && /etc/uci-defaults/vmease && rm -f /etc/uci-defaults/vmease
+	exit 0
 fi
 endef
 

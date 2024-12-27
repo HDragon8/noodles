@@ -3,7 +3,7 @@
 module("luci.controller.passwall2", package.seeall)
 local api = require "luci.passwall2.api"
 local appname = api.appname			-- not available
-local uci = luci.model.uci.cursor()		-- in funtion index()
+local uci = api.libuci		        -- in funtion index()
 local http = require "luci.http"
 local util = require "luci.util"
 local i18n = require "luci.i18n"
@@ -14,8 +14,9 @@ function index()
 			luci.sys.call('cp -f /usr/share/passwall2/0_default_config /etc/config/passwall2')
 		else return end
 	end
+	local api = require "luci.passwall2.api"
 	local appname = "passwall2"			-- global definitions not available
-	local uci = luci.model.uci.cursor()		-- in function index()
+	local uci = api.libuci		        -- in function index()
 	entry({"admin", "services", appname}).dependent = true
 	entry({"admin", "services", appname, "reset_config"}, call("reset_config")).leaf = true
 	entry({"admin", "services", appname, "show"}, call("show_menu")).leaf = true
@@ -134,7 +135,7 @@ function socks_autoswitch_add_node()
 				table.insert(new_list, e.id)
 			end
 		end
-		uci:set_list(appname, id, "autoswitch_backup_node", new_list)
+		api.uci_set_list(uci, appname, id, "autoswitch_backup_node", new_list)
 		uci:commit(appname)
 	end
 	luci.http.redirect(api.url("socks_config", id))
@@ -150,7 +151,7 @@ function socks_autoswitch_remove_node()
 				table.remove(new_list, i)
 			end
 		end
-		uci:set_list(appname, id, "autoswitch_backup_node", new_list)
+		api.uci_set_list(uci, appname, id, "autoswitch_backup_node", new_list)
 		uci:commit(appname)
 	end
 	luci.http.redirect(api.url("socks_config", id))
@@ -158,9 +159,9 @@ end
 
 function get_now_use_node()
 	local e = {}
-	local data, code, msg = nixio.fs.readfile("/tmp/etc/passwall2/acl/default/global.id")
-	if data then
-		e["global"] = util.trim(data)
+	local node = api.get_cache_var("ACL_GLOBAL_node")
+	if node then
+		e["global"] = node
 	end
 	luci.http.prepare_content("application/json")
 	luci.http.write_json(e)
@@ -299,7 +300,7 @@ end
 function copy_node()
 	local section = luci.http.formvalue("section")
 	local uuid = api.gen_short_uuid()
-	uci:section(appname, "nodes", uuid)
+	api.uci_section(uci, appname, "nodes", uuid)
 	for k, v in pairs(uci:get_all(appname, section)) do
 		local filter = k:find("%.")
 		if filter and filter == 1 then
@@ -319,16 +320,16 @@ end
 
 function clear_all_nodes()
 	uci:set(appname, '@global[0]', "enabled", "0")
-	uci:set(appname, '@global[0]', "node", "nil")
+	uci:delete(appname, '@global[0]', "node")
 	uci:foreach(appname, "socks", function(t)
 		uci:delete(appname, t[".name"])
-		uci:set_list(appname, t[".name"], "autoswitch_backup_node", {})
+		api.uci_set_list(uci, appname, t[".name"], "autoswitch_backup_node", {})
 	end)
 	uci:foreach(appname, "haproxy_config", function(t)
 		uci:delete(appname, t[".name"])
 	end)
 	uci:foreach(appname, "acl_rule", function(t)
-		uci:set(appname, t[".name"], "node", "default")
+		uci:delete(appname, t[".name"], "node")
 	end)
 	uci:foreach(appname, "nodes", function(node)
 		uci:delete(appname, node['.name'])
@@ -341,8 +342,8 @@ end
 function delete_select_nodes()
 	local ids = luci.http.formvalue("ids")
 	string.gsub(ids, '[^' .. "," .. ']+', function(w)
-		if (uci:get(appname, "@global[0]", "node") or "nil") == w then
-			uci:set(appname, '@global[0]', "node", "nil")
+		if (uci:get(appname, "@global[0]", "node") or "") == w then
+			uci:delete(appname, '@global[0]', "node")
 		end
 		uci:foreach(appname, "socks", function(t)
 			if t["node"] == w then
@@ -354,7 +355,7 @@ function delete_select_nodes()
 					table.remove(auto_switch_node_list, i)
 				end
 			end
-			uci:set_list(appname, t[".name"], "autoswitch_backup_node", auto_switch_node_list)
+			api.uci_set_list(uci, appname, t[".name"], "autoswitch_backup_node", auto_switch_node_list)
 		end)
 		uci:foreach(appname, "haproxy_config", function(t)
 			if t["lbss"] == w then
@@ -363,7 +364,17 @@ function delete_select_nodes()
 		end)
 		uci:foreach(appname, "acl_rule", function(t)
 			if t["node"] == w then
-				uci:set(appname, t[".name"], "node", "default")
+				uci:delete(appname, t[".name"], "node")
+			end
+		end)
+		uci:foreach(appname, "nodes", function(t)
+			if t["preproxy_node"] == w then
+				uci:delete(appname, t[".name"], "preproxy_node")
+				uci:delete(appname, t[".name"], "chain_proxy")
+			end
+			if t["to_node"] == w then
+				uci:delete(appname, t[".name"], "to_node")
+				uci:delete(appname, t[".name"], "chain_proxy")
 			end
 		end)
 		uci:delete(appname, w)
