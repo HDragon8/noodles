@@ -18,6 +18,8 @@ rm -rf $1
 }
 #git clone --depth 1 https://github.com/kenzo78/my-packages && mvdir my-packages
 git clone --depth 1 https://github.com/HDragon8/A-default-settings
+git clone --depth 1 https://github.com/xiaorouji/openwrt-passwall-packages && mvdir openwrt-passwall-packages
+git clone --depth 1 https://github.com/fw876/helloworld && mvdir helloworld
 git clone --depth 1 https://github.com/kiddin9/luci-app-dnsfilter
 git clone --depth 1 https://github.com/kiddin9/aria2
 git clone --depth 1 https://github.com/kiddin9/luci-app-baidupcs-web
