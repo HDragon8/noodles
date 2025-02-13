@@ -36,7 +36,9 @@ THE SOFTWARE.
 
 int current_log_level = LOG_LEVEL_INFO;
 af_run_time_status_t g_af_status;
-int g_oaf_config_change = 0;
+int g_oaf_config_change = 1;
+af_config_t g_af_config;
+int g_hnat_init = 0;
 
 void af_init_time_status(void){
     g_af_status.filter = 0;
@@ -116,6 +118,7 @@ EXIT:
 
 void af_load_global_config(af_global_config_t *config){
     int ret = 0;
+	char lan_ifname[32] = {0};
     struct uci_context *ctx = uci_alloc_context();
     if (!ctx)
         return;
@@ -124,6 +127,12 @@ void af_load_global_config(af_global_config_t *config){
         config->enable = 0;
     else
         config->enable = ret;
+
+    ret = af_uci_get_int_value(ctx, "appfilter.global.record_enable");
+    if (ret < 0)
+        config->record_enable = 0;
+    else
+        config->record_enable = ret;
 
     ret = af_uci_get_int_value(ctx, "appfilter.global.user_mode");
     if (ret < 0)
@@ -136,6 +145,24 @@ void af_load_global_config(af_global_config_t *config){
         config->work_mode = 0;
     else
         config->work_mode = ret;
+    ret = af_uci_get_int_value(ctx, "appfilter.global.tcp_rst");
+    if (ret < 0)
+        config->tcp_rst = 1;
+    else
+        config->tcp_rst = ret;
+
+    ret = af_uci_get_int_value(ctx, "appfilter.global.disable_hnat");
+    if (ret < 0)
+        config->disable_hnat = 1;
+    else
+        config->disable_hnat = ret;
+
+    ret = af_uci_get_value(ctx, "appfilter.global.disable_hnat", lan_ifname, sizeof(lan_ifname));
+	if (ret < 0)
+		strncpy(config->lan_ifname, "br-lan", sizeof(config->lan_ifname) - 1);
+	else
+		strncpy(config->lan_ifname, lan_ifname, sizeof(config->lan_ifname) - 1);
+
     uci_free_context(ctx);
     LOG_INFO("enable=%d, user_mode=%d, work_mode=%d", config->enable, config->user_mode, config->work_mode);
 }
@@ -274,6 +301,22 @@ void update_oaf_status(void){
     }
 }
 
+void update_oaf_record_status(void){
+    if(g_af_config.global.record_enable == 1){
+        system("echo 1 >/proc/sys/oaf/record_enable");
+    }
+    else{
+        system("echo 0 >/proc/sys/oaf/record_enable");
+    }
+}
+
+void af_hnat_init(void){
+    if (g_hnat_init == 0){
+        system("/usr/bin/hnat.sh");
+        g_hnat_init = 1;
+    }
+}
+
 
 void dev_list_timeout_handler(struct uloop_timeout *t)
 {
@@ -281,8 +324,6 @@ void dev_list_timeout_handler(struct uloop_timeout *t)
     count++;
     if (count % 10 == 0){
         update_dev_list();
-        dump_dev_list();
-        update_oaf_status();
     }
     if (count % 60 == 0){
         check_dev_visit_info_expire();
@@ -291,11 +332,18 @@ void dev_list_timeout_handler(struct uloop_timeout *t)
             flush_dev_expire_node();
         }
         flush_expire_visit_info();
+        update_oaf_status();
+        dump_dev_list();
     }
     if (g_oaf_config_change == 1){
+        update_lan_ip();
         af_load_config(&g_af_config);
         update_oaf_status();
+        update_oaf_record_status();
         g_oaf_config_change = 0;
+    }
+    if (count > 60){ // delay init
+        af_hnat_init();
     }
     uloop_timeout_set(t, 1000);
 }

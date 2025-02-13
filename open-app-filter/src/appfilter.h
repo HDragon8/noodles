@@ -71,6 +71,10 @@ typedef struct af_global_config_t{
     int enable;
     int user_mode;
     int work_mode;
+    int record_enable;
+	int disable_hnat;
+	int tcp_rst;
+	char lan_ifname[16];
 }af_global_config_t;
 
 typedef struct time_config{
@@ -100,6 +104,6 @@ typedef struct af_run_time_status{
     int match_time;
 }af_run_time_status_t;
 
-af_config_t g_af_config;
 
+extern af_config_t g_af_config;
 #endif
