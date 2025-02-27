@@ -68,7 +68,10 @@ var Timefield = ui.Textfield.extend({
 		let string = '0';
 		if(/^\d+$/.test(value)) {
 			value = Number(value);
-			if(value >= 3600 && (value % 3600) === 0) {
+			if(value >= 86400 && (value % 86400) === 0) {
+				string = String(value / 86400) + 'd';
+			}
+			else if(value >= 3600 && (value % 3600) === 0) {
 				string = String(value / 3600) + 'h';
 			}
 			else if(value >= 60 && (value % 60) === 0) {
@@ -101,9 +104,12 @@ var Timefield = ui.Textfield.extend({
 	getValue() {
 		let rawValue = this.node.querySelector('input').value,
 		    value    = 0,
-		    res      = rawValue.match(/^(\d+)([hms]?)$/);
+		    res      = rawValue.match(/^(\d+)([dhms]?)$/);
 		if(res) {
-			if(res[2] === 'h') {
+			if(res[2] === 'd') {
+				value = Number(res[1]) * 86400;
+			}
+			else if(res[2] === 'h') {
 				value = Number(res[1]) * 3600;
 			}
 			else if(res[2] === 'm') {
@@ -128,23 +134,24 @@ var Timefield = ui.Textfield.extend({
 });
 
 return view.extend({
-	appName             : 'internet-detector',
-	configDir           : '/etc/internet-detector',
-	ledsPath            : '/sys/class/leds',
-	pollInterval        : L.env.pollinterval,
-	appStatus           : 'stoped',
-	initStatus          : null,
-	inetStatus          : null,
-	inetStatusArea      : E('div', { 'class': 'cbi-value-field', 'id': 'inetStatusArea' }),
-	serviceStatusLabel  : E('em', { 'id': 'serviceStatusLabel' }),
-	initButton          : null,
-	currentAppMode      : '0',
-	defaultHosts        : [ '8.8.8.8', '1.1.1.1' ],
-	leds                : [],
-	mm                  : false,
-	mmInit              : false,
-	email               : false,
-	emailExec           : false,
+	appName            : 'internet-detector',
+	configDir          : '/etc/internet-detector',
+	pollInterval       : L.env.pollinterval,
+	appStatus          : 'stoped',
+	initStatus         : null,
+	inetStatus         : null,
+	inetStatusArea     : E('div', { 'class': 'cbi-value-field', 'id': 'inetStatusArea' }),
+	serviceStatusLabel : E('em', { 'id': 'serviceStatusLabel' }),
+	initButton         : null,
+	currentAppMode     : '0',
+	defaultHosts       : [ '8.8.8.8', '1.1.1.1' ],
+	ledsPath           : '/sys/class/leds',
+	ledsPerInstance    : 3,
+	leds               : [],
+	mm                 : false,
+	mmInit             : false,
+	email              : false,
+	emailExec          : false,
 
 	callInitStatus: rpc.declare({
 		object: 'luci',
@@ -321,8 +328,8 @@ return view.extend({
 				placeholder: _('Type a time string'),
 				validate   : L.bind(
 					function(section, value) {
-						return (/^$|^\d+[hms]?$/.test(value)) ? true : _('Expecting:') +
-							` ${_('One of the following:')}\n - ${_('hours')}: 2h\n - ${_('minutes')}: 10m\n - ${_('seconds')}: 30s\n`;
+						return (/^$|^\d+[dhms]?$/.test(value)) ? true : _('Expecting:') +
+							` ${_('One of the following:')}\n - ${_('days')}: 1d\n - ${_('hours')}: 2h\n - ${_('minutes')}: 10m\n - ${_('seconds')}: 30s\n`;
 					},
 					this,
 					section_id
@@ -505,9 +512,9 @@ return view.extend({
 		if(!data) {
 			return;
 		};
-		this.appStatus      = (data[0].code === 0) ? data[0].stdout.trim() : null;
-		this.initStatus     = data[1];
-		this.leds           = data[2];
+		this.appStatus  = (data[0].code === 0) ? data[0].stdout.trim() : null;
+		this.initStatus = data[1];
+		this.leds       = data[2];
 		if(data[3]) {
 			if(data[3].mm_mod) {
 				this.mm = true;
@@ -736,6 +743,7 @@ return view.extend({
 				s.tab('email', _('Email notification'));
 			};
 			s.tab('user_scripts', _('User scripts'));
+			s.tab('regular_script', _('Regular script'));
 		};
 
 		s.addModalOptions = (s, section_id, ev) => {
@@ -760,32 +768,44 @@ return view.extend({
 					o.rmempty = false;
 					o.modalonly = true;
 
-					// led_name
-					o = s.taboption('led_control', form.ListValue, 'mod_led_control_led_name',
-						_('<abbr title="Light Emitting Diode">LED</abbr> Name'));
+					o = s.taboption('led_control', form.SectionValue, s.section, form.NamedSection,
+						s.section);
 					o.depends({ mod_led_control_enabled: '1' });
-					o.modalonly = true;
-					this.leds.forEach(e => o.value(e.name));
+					ss = o.subsection;
 
-					// led_action_1
-					o = s.taboption('led_control', form.ListValue, 'mod_led_control_led_action_1',
-						_('Action when connected'));
-					o.depends({ mod_led_control_enabled: '1' });
-					o.modalonly = true;
-					o.value(1, _('Off'));
-					o.value(2, _('On'));
-					o.value(3, _('Blink'));
-					o.default = '2';
+					for(let i = 1; i <= this.ledsPerInstance; i++) {
+						ss.tab('led' + i + '_tab', _('LED') + ' ' + i);
 
-					// led_action_2
-					o = s.taboption('led_control', form.ListValue, 'mod_led_control_led_action_2',
-						_('Action when disconnected'));
-					o.depends({ mod_led_control_enabled: '1' });
-					o.modalonly = true;
-					o.value(1, _('Off'));
-					o.value(2, _('On'));
-					o.value(3, _('Blink'));
-					o.default = '1';
+						// led_name
+						o = ss.taboption('led' + i + '_tab', form.ListValue, 'mod_led_control_led' + i + '_name',
+							_('<abbr title="Light Emitting Diode">LED</abbr> Name'));
+						o.modalonly = true;
+						if(i > 1) {
+							o.rmempty  = true;
+							o.optional = true;
+						};
+						this.leds.forEach(e => o.value(e.name));
+
+						// led_action_1
+						o = ss.taboption('led' + i + '_tab', form.ListValue, 'mod_led_control_led' + i + '_action_1',
+							_('Action when connected'));
+						o.depends({ ['mod_led_control_led' + i + '_name']: /.+/ });
+						o.modalonly = true;
+						o.value(1, _('Off'));
+						o.value(2, _('On'));
+						o.value(3, _('Blink'));
+						o.default = '2';
+
+						// led_action_2
+						o = ss.taboption('led' + i + '_tab', form.ListValue, 'mod_led_control_led' + i + '_action_2',
+							_('Action when disconnected'));
+						o.depends({ ['mod_led_control_led' + i + '_name']: /.+/ });
+						o.modalonly = true;
+						o.value(1, _('Off'));
+						o.value(2, _('On'));
+						o.value(3, _('Blink'));
+						o.default = '1';
+					};
 				} else {
 					o = s.taboption('led_control', form.DummyValue, '_dummy');
 					o.rawhtml = true;
@@ -852,7 +872,7 @@ return view.extend({
 				// dead_period
 				o = s.taboption('restart_network', this.CBITimeInput,
 					'mod_network_restart_dead_period', _('Dead period'),
-					_('Period of time without Internet access before network restart.')
+					_('Period of time without Internet access before network restart or between restart attempts.')
 				);
 				o.default   = '900';
 				o.rmempty   = false;
@@ -1160,7 +1180,7 @@ return view.extend({
 				o.rmempty   = false;
 				o.modalonly = true;
 
-				// up_script edit dialog
+				// up_script edit
 				o = s.taboption('user_scripts', this.CBIBlockFileEdit, this,
 					'up_script',
 					this.configDir + '/up-script.' + s.section,
@@ -1178,7 +1198,7 @@ return view.extend({
 				o.rmempty   = false;
 				o.modalonly = true;
 
-				// down_script edit dialog
+				// down_script edit
 				o = s.taboption('user_scripts', this.CBIBlockFileEdit, this,
 					'down_script',
 					this.configDir + '/down-script.' + s.section,
@@ -1193,6 +1213,48 @@ return view.extend({
 					_('Period of time after disconnecting from Internet before "down-script" runs.')
 				);
 				o.default   = '0';
+				o.rmempty   = false;
+				o.modalonly = true;
+
+				// Regular script
+
+				o = s.taboption('regular_script', form.DummyValue, '_dummy');
+				o.rawhtml = true;
+				o.default = '<div class="cbi-section-descr">' +
+					_('Shell commands that are run regularly.') +
+					'</div>';
+				o.modalonly = true;
+
+				// enabled
+				o = s.taboption('regular_script', form.Flag, 'mod_regular_script_enabled',
+					_('Enabled'));
+				o.rmempty   = false;
+				o.modalonly = true;
+
+				// inet_state
+				o = s.taboption('regular_script', form.ListValue,
+					'mod_regular_script_inet_state', _('Run if Internet state is')
+				);
+				o.modalonly = true;
+				o.value(0, _('connected'));
+				o.value(1, _('disconnected'));
+				o.value(2, _('connected or disconnected'));
+				o.default = '2';
+
+				// regular_script edit
+				o = s.taboption('regular_script', this.CBIBlockFileEdit, this,
+					'regular_script',
+					this.configDir + '/regular-script.' + s.section,
+					_('Edit regular-script'),
+					_('Shell commands that run regularly at a specified interval. Current state of the Internet is available as value of the <code>$INET_STATE</code> variable (<code>0</code> - connected, <code>1</code> - disconnected).')
+				);
+				o.modalonly = true;
+
+				// interval
+				o = s.taboption('regular_script', this.CBITimeInput,
+					'mod_regular_script_interval', _('Run interval')
+				);
+				o.default   = '3600';
 				o.rmempty   = false;
 				o.modalonly = true;
 			};

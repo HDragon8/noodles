@@ -66,13 +66,9 @@
 		bgqs,setbar,dayword = '1','1','0'
 	end
 	local ufilter = string.format("blur(%dpx)", tonumber(primary_opacity))
-	local bar_color = primary_rgbbody
+	local bar_color = mode
 	if primary_opacity == '0' then
 	    ufilter = 'none'
-	end
-	local bgqs_image = '-webkit-linear-gradient(135deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.1) 75%, transparent 75%, transparent)'
-	if bgqs == '1' then
-	    bgqs_image = 'none'
 	end
 	local bg_url = media..'/img/bg1.jpg'
     local bg_lock = bg_url
@@ -178,6 +174,8 @@
 	<link rel="apple-touch-icon-precomposed" href="<%=media%>/img/apple-touch-icon.png" sizes="144x144">
 
 	<link rel="stylesheet" href="<%=media%>/css/style.css?v=<%= ver.luciversion %>">
+	<link rel="stylesheet" media="only screen and (max-device-width: 854px)" href="<%=media%>/css/mobile.css" type="text/css" />
+
 	<link rel="shortcut icon" href="<%=media%>/favicon.ico">
 	<meta name="theme-color" content="<%=bar_color%>">
     <% if node and node.css then %>
@@ -187,7 +185,8 @@
 
 	<% if css then %>
 		<%= css %>
-	<% end -%>
+	<% end
+	 if bgqs == '1' then -%> 
 	:root {
 		--primary-rgbbody:<%=primary_rgbbody%>;
 		--primary-rgbm: <%=primary_rgbm%>;
@@ -199,8 +198,38 @@
 		--font-x: <%=fontx%>;
 		--ufilter: <%=ufilter%>;
 		--bgqs-image: <%=bgqs_image%>;
+		--menu-bgcolor: rgba(var(--primary-rgbbody), var(--primary-rgbm-ts));
+		--menu-item-hover-bgcolor: rgba(var(--primary-rgbm), 0.8);
+		--menu-item-active-bgcolor:  rgba(var(--primary-rgbm), var(--primary-rgbm-ts));
+		<% if mode == 'dark'  then %>
+		--menu-fontcolor: #bbb;
+		<% else %>
+		--menu-fontcolor: #4d4d5d;
+		<% end -%>
+	}
+	<% else %>
+	:root {
+		--primary-rgbbody:<%=primary_rgbbody%>;
+		--primary-rgbm: <%=primary_rgbm%>;
+		--primary-rgbm-ts: <%=primary_rgbm_ts%>;
+		--primary-rgbs: <%=primary_rgbs%>;
+		--primary-rgbs-ts: <%=primary_rgbs_ts%>;
+		--font-d: <%=fontd%>;
+		--font-z: <%=fontz%>;
+		--font-x: <%=fontx%>;
+		--ufilter: <%=ufilter%>;
+		--bgqs-image: <%=bgqs_image%>;
+		--menu-bgcolor: rgba(var(--primary-rgbm), var(--primary-rgbm-ts));
+		--menu-item-hover-bgcolor: rgba(248,248,248, 0.22);
+		--menu-item-active-bgcolor: rgba(248,248,248, 0.3);
+		<% if mode == 'dark'  then %>
+		--menu-fontcolor: #bbb;
+		<% else %>
+		--menu-fontcolor: #f5f5f5f5;
+		<% end -%>
 	}
 
+	<% end -%>
 	<% if setbar == "1" then %>
 	header.bar-primary .container-bar-left {
  	   width: 300px;
@@ -279,10 +308,11 @@
 						<div class="flex1">
 							<a class="showSide"  title="<%:Menu%>" ></a>
 							<a class="brand" href="/"><%=striptags(boardinfo.hostname or "OpenWrt")%></a>
+							<% if dayword == '1' then %>
+							<a class="showWord" href="#"><%=showword%></a>
+							<% end -%>
 						</div>
-						<% if dayword == '1' then %>
-						<a class="showWord" href="#"><%=showword%></a>
-						<% end -%>
+
 						<div class="status" id="indicators"></div>
 
                         <span > <a class="pdboy-qlogout" href="<%=url("admin/logout")%>" title="<%:Log_out%>" > </a></span>
@@ -299,11 +329,9 @@
 				<%- if luci.sys.process.info("uid") == 0 and luci.sys.user.getuser("root") and not luci.sys.user.getpasswd("root") then -%>
 					<div class="alert-message warning">
 						<h4><%:No password set!%></h4>
-						<p><%:There is no password set on this router. Please configure a root password to protect the web interface.%>
-						</p>
+						<p><%:There is no password set on this router. Please configure a root password to protect the web interface.%></p>
 						<% if disp.lookup("admin/system/admin") then %>
-						<div class="right"><a class="btn"
-								href="<%=url("admin/system/admin")%>"><%:Go to password configuration...%></a></div>
+					  <div class="right"><a class="btn" href="<%=url("admin/system/admin")%>"><%:Go to password configuration...%></a></div>
 						<% end %>
 					</div>
 				<%- end -%>
