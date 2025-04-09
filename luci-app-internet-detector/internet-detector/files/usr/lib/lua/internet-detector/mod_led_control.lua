@@ -39,6 +39,13 @@ function Module:setLedAttrs(t)
 	t.ledBrightnessFile    = string.format("%s/brightness", t.ledDir)
 	t.ledMaxBrightness     = self.readValue(t.ledMaxBrightnessFile) or 1
 	t.ledTriggerFile       = string.format("%s/trigger", t.ledDir)
+	t.ledPrevState         = {
+		brightness = self.readValue(t.ledBrightnessFile),
+		trigger    = self.readValue(t.ledTriggerFile),
+	}
+	if t.ledPrevState.trigger then
+		t.ledPrevState.trigger = t.ledPrevState.trigger:match("%[%w+%]"):gsub("[%]%[]", "")
+	end
 end
 
 function Module:checkLed(t)
@@ -53,8 +60,6 @@ function Module:init(t)
 	end
 	if t.led1_name then
 		self._enabled = true
-		-- Reset all LEDs
-		--self:resetLeds()
 	else
 		return
 	end
@@ -76,11 +81,11 @@ function Module:init(t)
 	end
 end
 
-function Module:SetTriggerTimer(t)
+function Module:setTriggerTimer(t)
 	self.writeValue(t.ledTriggerFile, "timer")
 end
 
-function Module:SetTriggerNone(t)
+function Module:setTriggerNone(t)
 	self.writeValue(t.ledTriggerFile, "none")
 end
 
@@ -92,12 +97,12 @@ function Module:getCurrentTrigger(t)
 end
 
 function Module:on(t)
-	self:SetTriggerNone(t)
+	self:setTriggerNone(t)
 	self.writeValue(t.ledBrightnessFile, t.ledMaxBrightness)
 end
 
 function Module:off(t)
-	self:SetTriggerNone(t)
+	self:setTriggerNone(t)
 	self.writeValue(t.ledBrightnessFile, 0)
 end
 
@@ -120,7 +125,7 @@ function Module:ledRunFunc(t, currentStatus)
 			end
 		elseif t.ledAction1 == 3 then
 			if not self:getCurrentTrigger(t) then
-				self:SetTriggerTimer(t)
+				self:setTriggerTimer(t)
 			end
 		end
 	else
@@ -134,13 +139,13 @@ function Module:ledRunFunc(t, currentStatus)
 			end
 		elseif t.ledAction2 == 3 then
 			if not self:getCurrentTrigger(t) then
-				self:SetTriggerTimer(t)
+				self:setTriggerTimer(t)
 			end
 		end
 	end
 end
 
-function Module:run(currentStatus, lastStatus, timeDiff, timeNow)
+function Module:run(currentStatus, lastStatus, timeDiff, timeNow, inetChecked)
 	if not self._enabled then
 		return
 	end
@@ -153,6 +158,19 @@ function Module:run(currentStatus, lastStatus, timeDiff, timeNow)
 		self._counter = 0
 	end
 	self._counter = self._counter + timeDiff
+end
+
+function Module:onExit()
+	for _, l in ipairs(self._leds) do
+		if l.ledPrevState then
+			if l.ledPrevState.brightness then
+				self.writeValue(l.ledBrightnessFile, l.ledPrevState.brightness)
+			end
+			if l.ledPrevState.trigger then
+				self.writeValue(l.ledTriggerFile, l.ledPrevState.trigger)
+			end
+		end
+	end
 end
 
 return Module

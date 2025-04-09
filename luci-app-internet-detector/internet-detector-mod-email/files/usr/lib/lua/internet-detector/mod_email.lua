@@ -142,7 +142,7 @@ function Module:sendMessage(msg, textPattern)
 	end
 end
 
-function Module:run(currentStatus, lastStatus, timeDiff, timeNow)
+function Module:run(currentStatus, lastStatus, timeDiff, timeNow, inetChecked)
 	if not self._enabled then
 		return
 	end
@@ -187,6 +187,10 @@ function Module:run(currentStatus, lastStatus, timeDiff, timeNow)
 		end
 		self._disconnected = false
 	end
+end
+
+function Module:onExit()
+	return true
 end
 
 return Module

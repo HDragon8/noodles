@@ -40,7 +40,7 @@ function Module:init(t)
 	end
 end
 
-function Module:run(currentStatus, lastStatus, timeDiff, timeNow)
+function Module:run(currentStatus, lastStatus, timeDiff, timeNow, inetChecked)
 	if currentStatus == 1 then
 		self._aliveCounter     = 0
 		self._upScriptExecuted = false
@@ -64,6 +64,10 @@ function Module:run(currentStatus, lastStatus, timeDiff, timeNow)
 			end
 		end
 	end
+end
+
+function Module:onExit()
+	return true
 end
 
 return Module

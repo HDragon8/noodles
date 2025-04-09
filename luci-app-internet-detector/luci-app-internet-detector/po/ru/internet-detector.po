@@ -44,6 +44,9 @@ msgstr "Сообщение будет отправлено при подключ
 msgid "An error has occurred"
 msgstr "Произошла ошибка"
 
+msgid "Attempts"
+msgstr "Попытки"
+
 msgid "Big: 248 bytes"
 msgstr "Большой: 248 байт"
 
@@ -82,6 +85,9 @@ msgstr "Период после отключения"
 
 msgid "Default port value for TCP connections."
 msgstr "Стандартное значение порта для TCP-подключений."
+
+msgid "Device"
+msgstr "Устройство"
 
 msgid "Device will be rebooted when the Internet is disconnected."
 msgstr "Устройство будет перезагружено при отключении Интернет."
@@ -146,11 +152,8 @@ msgstr "Включен"
 msgid "Expecting:"
 msgstr "Ожидается:"
 
-msgid "Public IP"
-msgstr "Публичный IP"
-
-msgid "Public IP address"
-msgstr "Публичный IP адрес"
+msgid "Failed interval"
+msgstr "Интервал при неудаче"
 
 msgid "Failed to get %s init status: %s"
 msgstr "Не удалось получить статус инициализации %s: %s"
@@ -213,6 +216,9 @@ msgstr "Статус Интернет"
 msgid "Interval between IP address requests."
 msgstr "Интервал между запросами IP адреса."
 
+msgid "Interval between IP address requests if the IP address is not defined."
+msgstr "Интервал между запросами IP адреса, если IP адрес не определён."
+
 msgid "Jumbo: 9000 bytes"
 msgstr "Гигантский: 9000 байт"
 
@@ -255,23 +261,32 @@ msgstr ""
 "ModemManger."
 
 msgid ""
-"Network interface for Internet access. If not specified, the default "
-"interface is used."
+"Network device for Internet access. If not specified, the default "
+"device is used."
 msgstr ""
-"Сетевой интерфейс для доступа в Интернет. Если не указан, используется "
-"интерфейс по умолчанию."
+"Сетевое устройство для доступа в Интернет. Если не указано, используется "
+"устройство по умолчанию."
 
 msgid ""
-"Network interface to restart. If not specified, then the network service is restarted."
+"Network device or interface to restart. If not specified, then the network service is restarted."
 msgstr ""
-"Сетевой интерфейс для перезапуска. Если не задан, то будет перезапущена сетевая "
+"Сетевое устройство или интерфейс для перезапуска. Если не задано, то будет перезапущена сетевая "
 "служба."
 
 msgid "Network will be restarted when the Internet is disconnected."
 msgstr "Сеть будет перезапущена при отключении Интернет."
 
+msgid "Next run"
+msgstr "Следующий запуск"
+
 msgid "No <abbr title=\"Light Emitting Diode\">LED</abbr>s available..."
 msgstr "Нет доступных <abbr title=\"Светодиод\">LED</abbr>..."
+
+msgid "Not scheduled"
+msgstr "Не запланирован"
+
+msgid "Number of attempts to request an IP address."
+msgstr "Количество попыток запроса IP адреса"
 
 msgid "Off"
 msgstr "Выключить"
@@ -309,8 +324,8 @@ msgstr "Период времени отсутствия доступа в Ин�
 msgid "Period of time without Internet access before modem restart."
 msgstr "Период времени отсутствия доступа в Интренет перед перезапуском модема."
 
-msgid "Period of time without Internet access before network restart or between restart attempts."
-msgstr "Период времени отсутствия доступа в Интренет перед перезапуском сети или между попытками перезапуска."
+msgid "Period of time without Internet access before network restart."
+msgstr "Период времени отсутствия доступа в Интренет перед перезапуском сети."
 
 msgid ""
 "Period of time without Internet access until the device is rebooted."
@@ -322,6 +337,12 @@ msgstr "Регулярный скрипт"
 
 msgid "Polling interval"
 msgstr "Интервал опроса"
+
+msgid "Public IP"
+msgstr "Публичный IP"
+
+msgid "Public IP address"
+msgstr "Публичный IP адрес"
 
 msgid "Reboot device"
 msgstr "Перезагрузка устройства"
@@ -440,8 +461,8 @@ msgstr "Тип записи запрашиваемой в DNS-запросе (е
 msgid "TLS: use STARTTLS if the server supports it."
 msgstr "TLS: использовать STARTTLS если сервер поддерживает."
 
-msgid "Timeout between stopping and starting the interface."
-msgstr "Таймаут между остановкой и запуском интерфейса."
+msgid "Timeout between stopping and starting a network device."
+msgstr "Таймаут между остановкой и запуском сетевого устройства."
 
 msgid "Type a time string"
 msgstr "Введите строку времени"

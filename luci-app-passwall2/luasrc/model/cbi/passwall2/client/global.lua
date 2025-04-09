@@ -1,7 +1,7 @@
 local api = require "luci.passwall2.api"
 local appname = api.appname
 local datatypes = api.datatypes
-local has_singbox = api.finded_com("singbox")
+local has_singbox = api.finded_com("sing-box")
 local has_xray = api.finded_com("xray")
 
 m = Map(appname)
@@ -14,6 +14,7 @@ end
 
 local normal_list = {}
 local balancing_list = {}
+local urltest_list = {}
 local shunt_list = {}
 local iface_list = {}
 for k, v in pairs(nodes_table) do
@@ -22,6 +23,9 @@ for k, v in pairs(nodes_table) do
 	end
 	if v.protocol and v.protocol == "_balancing" then
 		balancing_list[#balancing_list + 1] = v
+	end
+	if v.protocol and v.protocol == "_urltest" then
+		urltest_list[#urltest_list + 1] = v
 	end
 	if v.protocol and v.protocol == "_shunt" then
 		shunt_list[#shunt_list + 1] = v
@@ -130,6 +134,9 @@ if (has_singbox or has_xray) and #nodes_table > 0 then
 			for k1, v1 in pairs(balancing_list) do
 				o:value(v1.id, v1.remark)
 			end
+			for k1, v1 in pairs(urltest_list) do
+				o:value(v1.id, v1.remark)
+			end
 			for k1, v1 in pairs(iface_list) do
 				o:value(v1.id, v1.remark)
 			end
@@ -174,6 +181,9 @@ if (has_singbox or has_xray) and #nodes_table > 0 then
 					for k1, v1 in pairs(balancing_list) do
 						o:value(v1.id, v1.remark)
 					end
+					for k1, v1 in pairs(urltest_list) do
+						o:value(v1.id, v1.remark)
+					end
 					for k1, v1 in pairs(iface_list) do
 						o:value(v1.id, v1.remark)
 					end
@@ -199,6 +209,9 @@ if (has_singbox or has_xray) and #nodes_table > 0 then
 			for k1, v1 in pairs(balancing_list) do
 				o:value(v1.id, v1.remark)
 			end
+			for k1, v1 in pairs(urltest_list) do
+				o:value(v1.id, v1.remark)
+			end
 			for k1, v1 in pairs(iface_list) do
 				o:value(v1.id, v1.remark)
 			end
@@ -214,7 +227,7 @@ if (has_singbox or has_xray) and #nodes_table > 0 then
 			o:value("", translate("Close"))
 			o:value("main", translate("Preproxy Node"))
 			for k1, v1 in pairs(normal_list) do
-				if v1.protocol ~= "_balancing" then
+				if v1.protocol ~= "_balancing" and v1.protocol ~= "_urltest" then
 					o:depends({ [vid .. "-default_node"] = v1.id, [vid .. "-preproxy_enabled"] = "1" })
 				end
 			end
@@ -338,9 +351,9 @@ o.default = "1"
 o.rmempty = false
 
 if (m:get("@global_forwarding[0]", "use_nft") or "0") == "1" then
-	o = s:taboption("DNS", Button, "clear_ipset", translate("Clear NFTSET"), translate("Try this feature if the rule modification does not take effect."))
+	o = s:taboption("DNS", Button, "clear_ipset", translate("Clear NFTSet"), translate("Try this feature if the rule modification does not take effect."))
 else
-	o = s:taboption("DNS", Button, "clear_ipset", translate("Clear IPSET"), translate("Try this feature if the rule modification does not take effect."))
+	o = s:taboption("DNS", Button, "clear_ipset", translate("Clear IPSet"), translate("Try this feature if the rule modification does not take effect."))
 end
 o.inputstyle = "remove"
 function o.write(e, e)

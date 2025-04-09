@@ -70,6 +70,7 @@
 	if primary_opacity == '0' then
 	    ufilter = 'none'
 	end
+
 	local bg_url = media..'/img/bg1.jpg'
     local bg_lock = bg_url
 	if background == '0' then
@@ -174,7 +175,6 @@
 	<link rel="apple-touch-icon-precomposed" href="<%=media%>/img/apple-touch-icon.png" sizes="144x144">
 
 	<link rel="stylesheet" href="<%=media%>/css/style.css?v=<%= ver.luciversion %>">
-	<link rel="stylesheet" media="only screen and (max-device-width: 854px)" href="<%=media%>/css/mobile.css" type="text/css" />
 
 	<link rel="shortcut icon" href="<%=media%>/favicon.ico">
 	<meta name="theme-color" content="<%=bar_color%>">
@@ -197,15 +197,20 @@
 		--font-z: <%=fontz%>;
 		--font-x: <%=fontx%>;
 		--ufilter: <%=ufilter%>;
-		--bgqs-image: <%=bgqs_image%>;
+		--bgqs-image: none;
 		--menu-bgcolor: rgba(var(--primary-rgbbody), var(--primary-rgbm-ts));
 		--menu-item-hover-bgcolor: rgba(var(--primary-rgbm), 0.8);
 		--menu-item-active-bgcolor:  rgba(var(--primary-rgbm), var(--primary-rgbm-ts));
 		<% if mode == 'dark'  then %>
-		--menu-fontcolor: #bbb;
+		--menu-fontcolor: #ddd;
 		<% else %>
 		--menu-fontcolor: #4d4d5d;
 		<% end -%>
+	}
+     @media screen and (max-width: 992px) {
+      .main .main-left {
+      	  background-color:rgba(var(--primary-rgbbody), 1);
+	}
 	}
 	<% else %>
 	:root {
@@ -218,12 +223,12 @@
 		--font-z: <%=fontz%>;
 		--font-x: <%=fontx%>;
 		--ufilter: <%=ufilter%>;
-		--bgqs-image: <%=bgqs_image%>;
+		--bgqs-image: -webkit-linear-gradient(135deg, rgba(255, 255, 255, 0.1) 25%, transparent 25%, transparent 50%, rgba(255, 255, 255, 0.1) 50%, rgba(255, 255, 255, 0.1) 75%, transparent 75%, transparent);
 		--menu-bgcolor: rgba(var(--primary-rgbm), var(--primary-rgbm-ts));
 		--menu-item-hover-bgcolor: rgba(248,248,248, 0.22);
 		--menu-item-active-bgcolor: rgba(248,248,248, 0.3);
 		<% if mode == 'dark'  then %>
-		--menu-fontcolor: #bbb;
+		--menu-fontcolor: #ddd;
 		<% else %>
 		--menu-fontcolor: #f5f5f5f5;
 		<% end -%>
@@ -334,6 +339,7 @@
 					  <div class="right"><a class="btn" href="<%=url("admin/system/admin")%>"><%:Go to password configuration...%></a></div>
 						<% end %>
 					</div>
+				
 				<%- end -%>
 				<noscript>
 					<div class="alert-message warning">

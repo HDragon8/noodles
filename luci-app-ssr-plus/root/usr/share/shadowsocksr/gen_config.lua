@@ -411,7 +411,7 @@ local ss = {
 	fast_open = (server.fast_open == "1") and true or false,
 	reuse_port = true
 }
-local hysteria = {
+local hysteria2 = {
 	server = (server.server_port and (server.port_range and (server.server .. ":" .. server.server_port .. "," .. server.port_range) or (server.server .. ":" .. server.server_port) or (server.port_range and server.server .. ":" .. server.port_range or server.server .. ":443"))),
 	bandwidth = (server.uplink_capacity or server.downlink_capacity) and {
 	up = tonumber(server.uplink_capacity) and tonumber(server.uplink_capacity) .. " mbps" or nil,
@@ -579,8 +579,12 @@ function config:handleIndex(index)
 	local switch = {
 		ss = function()
 			ss.protocol = socks_port
-			if server.plugin and server.plugin ~= "none" then
-				ss.plugin = server.plugin
+			if server.enable_plugin == "1" and server.plugin and server.plugin ~= "none" then
+				if server.plugin == "custom" then
+					ss.plugin = server.custom_plugin
+				else
+					ss.plugin = server.plugin
+				end
 				ss.plugin_opts = server.plugin_opts or nil
 			end
 			print(json.stringify(ss, 1))
@@ -602,8 +606,8 @@ function config:handleIndex(index)
 		naiveproxy = function()
 			print(json.stringify(naiveproxy, 1))
 		end,
-		hysteria = function()
-			print(json.stringify(hysteria, 1))
+		hysteria2 = function()
+			print(json.stringify(hysteria2, 1))
 		end,
 		shadowtls = function()
 			local chain_switch = {

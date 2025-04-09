@@ -80,7 +80,7 @@ function Module:init(t)
 	end
 end
 
-function Module:run(currentStatus, lastStatus, timeDiff, timeNow)
+function Module:run(currentStatus, lastStatus, timeDiff, timeNow, inetChecked)
 	if not self._enabled then
 		return
 	end
@@ -97,6 +97,10 @@ function Module:run(currentStatus, lastStatus, timeDiff, timeNow)
 		self._deadCounter = 0
 		self._restarted   = false
 	end
+end
+
+function Module:onExit()
+	return true
 end
 
 return Module

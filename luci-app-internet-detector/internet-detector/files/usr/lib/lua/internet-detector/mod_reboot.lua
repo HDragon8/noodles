@@ -36,7 +36,7 @@ function Module:init(t)
 	end
 end
 
-function Module:run(currentStatus, lastStatus, timeDiff, timeNow)
+function Module:run(currentStatus, lastStatus, timeDiff, timeNow, inetChecked)
 	if currentStatus == 1 then
 		if not self._rebooted then
 			if timeNow >= self.antiBootloopDelay and self._deadCounter >= self.deadPeriod then
@@ -50,6 +50,10 @@ function Module:run(currentStatus, lastStatus, timeDiff, timeNow)
 		self._deadCounter = 0
 		self._rebooted    = false
 	end
+end
+
+function Module:onExit()
+	return true
 end
 
 return Module
