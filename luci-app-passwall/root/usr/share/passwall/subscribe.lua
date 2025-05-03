@@ -549,8 +549,8 @@ local function processData(szType, content, add_mode, add_from)
 				info.type = "none"
 			end
 			result.tcp_guise = info.type
-			result.tcp_guise_http_host = info.host
-			result.tcp_guise_http_path = info.path
+			result.tcp_guise_http_host = (info.host and info.host ~= "") and { info.host } or nil
+			result.tcp_guise_http_path = (info.path and info.path ~= "") and { info.path } or nil
 		end
 		if info.net == 'kcp' or info.net == 'mkcp' then
 			info.net = "mkcp"
@@ -695,8 +695,27 @@ local function processData(szType, content, add_mode, add_from)
 
 			if result.plugin then
 				if result.type == 'Xray' then
-					--不支持插件
-					result.error_msg = "Xray不支持插件."
+					-- obfs-local插件转换成xray支持的格式
+					if result.plugin ~= "obfs-local" then
+						result.error_msg = "Xray不支持 " .. result.plugin .. " 插件."
+					else
+						local obfs = result.plugin_opts:match("obfs=([^;]+)") or ""
+						local obfs_host = result.plugin_opts:match("obfs%-host=([^;]+)") or ""
+						if obfs == "" or obfs_host == "" then
+							result.error_msg = "SS " .. result.plugin .. " 插件选项不完整."
+						end
+						if obfs == "http" then
+							result.transport = "raw"
+							result.tcp_guise = "http"
+							result.tcp_guise_http_host = (obfs_host and obfs_host ~= "") and { obfs_host } or nil
+						elseif obfs == "tls" then
+							result.tls = "1"
+							result.tls_serverName = obfs_host
+							result.tls_allowInsecure = "1"
+						end
+						result.plugin = nil
+						result.plugin_opts = nil
+					end
 				end
 				if result.type == "sing-box" then
 					result.plugin_enabled = "1"
@@ -764,8 +783,8 @@ local function processData(szType, content, add_mode, add_from)
 					end
 					if params.type == 'raw' or params.type == 'tcp' then
 						result.tcp_guise = params.headerType or "none"
-						result.tcp_guise_http_host = params.host
-						result.tcp_guise_http_path = params.path
+						result.tcp_guise_http_host = (params.host and params.host ~= "") and { params.host } or nil
+						result.tcp_guise_http_path = (params.path and params.path ~= "") and { params.path } or nil
 					end
 					if params.type == 'kcp' or params.type == 'mkcp' then
 						result.transport = "mkcp"
@@ -925,8 +944,8 @@ local function processData(szType, content, add_mode, add_from)
 			end
 			if params.type == 'raw' or params.type == 'tcp' then
 				result.tcp_guise = params.headerType or "none"
-				result.tcp_guise_http_host = params.host
-				result.tcp_guise_http_path = params.path
+				result.tcp_guise_http_host = (params.host and params.host ~= "") and { params.host } or nil
+				result.tcp_guise_http_path = (params.path and params.path ~= "") and { params.path } or nil
 			end
 			if params.type == 'kcp' or params.type == 'mkcp' then
 				result.transport = "mkcp"
@@ -1072,8 +1091,8 @@ local function processData(szType, content, add_mode, add_from)
 			end
 			if params.type == 'raw' or params.type == 'tcp' then
 				result.tcp_guise = params.headerType or "none"
-				result.tcp_guise_http_host = params.host
-				result.tcp_guise_http_path = params.path
+				result.tcp_guise_http_host = (params.host and params.host ~= "") and { params.host } or nil
+				result.tcp_guise_http_path = (params.path and params.path ~= "") and { params.path } or nil
 			end
 			if params.type == 'kcp' or params.type == 'mkcp' then
 				result.transport = "mkcp"
@@ -1602,10 +1621,14 @@ local function update_node(manual)
 		for _, vv in ipairs(list) do
 			local cfgid = uci:section(appname, "nodes", api.gen_short_uuid())
 			for kkk, vvv in pairs(vv) do
-				uci:set(appname, cfgid, kkk, vvv)
-				-- sing-box 域名解析策略
-				if kkk == "type" and vvv == "sing-box" then
-					uci:set(appname, cfgid, "domain_strategy", domain_strategy_node)
+				if type(vvv) == "table" and next(vvv) ~= nil then
+					uci:set_list(appname, cfgid, kkk, vvv)
+				else
+					uci:set(appname, cfgid, kkk, vvv)
+					-- sing-box 域名解析策略
+					if kkk == "type" and vvv == "sing-box" then
+						uci:set(appname, cfgid, "domain_strategy", domain_strategy_node)
+					end
 				end
 			end
 		end
