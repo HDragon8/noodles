@@ -32,6 +32,9 @@ msgstr ""
 msgid "An error has occurred"
 msgstr ""
 
+msgid "Attempt interval"
+msgstr ""
+
 msgid "Attempts"
 msgstr ""
 
@@ -184,7 +187,13 @@ msgstr ""
 msgid "ICMP packet data size"
 msgstr ""
 
+msgid "Instances"
+msgstr ""
+
 msgid "Interface"
+msgstr ""
+
+msgid "Interface timeout"
 msgstr ""
 
 msgid "Internet"
@@ -203,6 +212,18 @@ msgid "Interval between IP address requests."
 msgstr ""
 
 msgid "Interval between IP address requests if the IP address is not defined."
+msgstr ""
+
+msgid "Interval between modem restarts."
+msgstr ""
+
+msgid "Interval between network restarts."
+msgstr ""
+
+msgid "Interval between down-script runs."
+msgstr ""
+
+msgid "Interval between up-script runs."
 msgstr ""
 
 msgid "Jumbo: 9000 bytes"
@@ -226,6 +247,14 @@ msgstr ""
 msgid ""
 "Maximum number of network restart attempts before Internet access is "
 "available."
+msgstr ""
+
+msgid ""
+"Maximum number of up-script run attempts when connected to the Internet."
+msgstr ""
+
+msgid ""
+"Maximum number of down-script run attempts before Internet access is available."
 msgstr ""
 
 msgid "Maximum timeout for waiting for a response from the host."
@@ -272,6 +301,9 @@ msgstr ""
 msgid "On"
 msgstr ""
 
+msgid "On startup"
+msgstr ""
+
 msgid "One of the following:"
 msgstr ""
 
@@ -282,7 +314,7 @@ msgid "Password for SMTP authentication."
 msgstr ""
 
 msgid ""
-"Period of time after connecting to Internet before \"up-script\" runs."
+"Period of time after connecting to Internet before up-script runs."
 msgstr ""
 
 msgid ""
@@ -290,7 +322,7 @@ msgid ""
 msgstr ""
 
 msgid ""
-"Period of time after disconnecting from Internet before \"down-script\" runs."
+"Period of time after disconnecting from Internet before down-script runs."
 msgstr ""
 
 msgid ""
@@ -322,6 +354,9 @@ msgstr ""
 msgid "Reboot device"
 msgstr ""
 
+msgid "Reboot device if the Internet is disconnected at service startup."
+msgstr ""
+
 msgid "Recipient"
 msgstr ""
 
@@ -334,13 +369,19 @@ msgstr ""
 msgid "Restart modem"
 msgstr ""
 
+msgid "Restart modem if the Internet is disconnected at service startup."
+msgstr ""
+
 msgid "Restart network"
+msgstr ""
+
+msgid "Restart network if the Internet is disconnected at service startup."
 msgstr ""
 
 msgid "Restart service"
 msgstr ""
 
-msgid "Restart timeout"
+msgid "Device timeout"
 msgstr ""
 
 msgid "Run interval"
@@ -350,6 +391,12 @@ msgid "Run if Internet state is"
 msgstr ""
 
 msgid "Run service at startup"
+msgstr ""
+
+msgid "Run down-script if the Internet is disconnected at service startup."
+msgstr ""
+
+msgid "Run up-script if the Internet is connected at service startup."
 msgstr ""
 
 msgid "Running"
@@ -368,6 +415,9 @@ msgid "Save"
 msgstr ""
 
 msgid "Security"
+msgstr ""
+
+msgid "Send message on service startup."
 msgstr ""
 
 msgid "Sender"
@@ -389,9 +439,6 @@ msgid "Service for determining the public IP address through DNS."
 msgstr ""
 
 msgid "Service: detector always runs as a system service."
-msgstr ""
-
-msgid "Service instances"
 msgstr ""
 
 msgid "Set the modem to be allowed to use any band."
@@ -436,7 +483,10 @@ msgstr ""
 msgid "TLS: use STARTTLS if the server supports it."
 msgstr ""
 
-msgid "Timeout between stopping and starting a network device."
+msgid "Timeout between stopping and starting a network device when restarting."
+msgstr ""
+
+msgid "Timeout between stopping and starting a ModemManger interface when restarting."
 msgstr ""
 
 msgid "Type a time string"
@@ -508,6 +558,9 @@ msgstr ""
 msgid "hours"
 msgstr ""
 
+msgid "infinitely"
+msgstr ""
+
 msgid "min"
 msgstr ""
 
@@ -521,4 +574,16 @@ msgid "seconds"
 msgstr ""
 
 msgid "up-script"
+msgstr ""
+
+msgid "down-script attempts"
+msgstr ""
+
+msgid "down-script attempt interval"
+msgstr ""
+
+msgid "up-script attempts"
+msgstr ""
+
+msgid "up_script attempt interval"
 msgstr ""

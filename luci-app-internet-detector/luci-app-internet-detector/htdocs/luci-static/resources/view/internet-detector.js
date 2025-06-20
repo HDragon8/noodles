@@ -56,6 +56,7 @@ document.head.append(E('style', {'type': 'text/css'},
 	-moz-border-radius: 4px;
 	border-radius: 4px;
 	font-weight: bold;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 `));
 
@@ -593,7 +594,7 @@ return view.extend({
 		mode.default = '0';
 
 
-		/* Service instances configuration */
+		/* Instances configuration */
 
 		if(this.currentAppMode !== '2') {
 
@@ -608,7 +609,7 @@ return view.extend({
 
 		s = m.section(form.GridSection, 'instance');
 
-		s.title          = _('Service instances');
+		s.title          = _('Instances');
 		s.addremove      = true;
 		s.sortable       = true;
 		s.nodescriptions = true;
@@ -830,11 +831,11 @@ return view.extend({
 
 				// Reboot device
 
-				o = s.taboption('reboot_device', form.DummyValue, '_dummy');
-					o.rawhtml = true;
-					o.default = '<div class="cbi-section-descr">' +
-						_('Device will be rebooted when the Internet is disconnected.') +
-						'</div>';
+				o         = s.taboption('reboot_device', form.DummyValue, '_dummy');
+				o.rawhtml = true;
+				o.default = '<div class="cbi-section-descr">' +
+					_('Device will be rebooted when the Internet is disconnected.') +
+					'</div>';
 				o.modalonly = true;
 
 				// enabled
@@ -867,6 +868,14 @@ return view.extend({
 				o.value(3600, '1 ' + _('hour'));
 				o.default = '300';
 
+				// disconnected_at_startup
+				o = s.taboption('reboot_device', form.Flag, 'mod_reboot_disconnected_at_startup',
+					_('On startup'),
+					_('Reboot device if the Internet is disconnected at service startup.')
+				);
+				o.rmempty   = false;
+				o.modalonly = true;
+
 				// Restart network
 
 				o = s.taboption('restart_network', form.DummyValue, '_dummy');
@@ -891,6 +900,14 @@ return view.extend({
 				o.rmempty   = false;
 				o.modalonly = true;
 
+				// ifaces
+				o = s.taboption('restart_network', widgets.DeviceSelect, 'mod_network_restart_ifaces',
+					_('Device'),
+					_('Network device or interface to restart. If not specified, then the network service is restarted.')
+				);
+				o.modalonly = true;
+				o.multiple  = true;
+
 				// attempts
 				o = s.taboption('restart_network', form.ListValue,
 					'mod_network_restart_attempts', _('Restart attempts'),
@@ -902,20 +919,22 @@ return view.extend({
 				o.value(3);
 				o.value(4);
 				o.value(5);
+				o.value(0, _('infinitely'));
 				o.default = '1';
 
-				// ifaces
-				o = s.taboption('restart_network', widgets.DeviceSelect, 'mod_network_restart_ifaces',
-					_('Device'),
-					_('Network device or interface to restart. If not specified, then the network service is restarted.')
+				// attempt_interval
+				o = s.taboption('restart_network', this.CBITimeInput,
+					'mod_network_restart_attempt_interval', _('Attempt interval'),
+					_('Interval between network restarts.')
 				);
+				o.default   = '15';
+				o.rmempty   = false;
 				o.modalonly = true;
-				o.multiple  = true;
 
-				// restart_timeout
+				// device_timeout
 				o = s.taboption('restart_network', form.ListValue,
-					'mod_network_restart_restart_timeout', _('Restart timeout'),
-					_('Timeout between stopping and starting a network device.')
+					'mod_network_restart_device_timeout', _('Device timeout'),
+					_('Timeout between stopping and starting a network device when restarting.')
 				);
 				o.modalonly = true;
 				o.value(0,  '0 ' + _('sec'));
@@ -931,15 +950,23 @@ return view.extend({
 				o.value(10, '10 ' + _('sec'));
 				o.default = '0';
 
+				// disconnected_at_startup
+				o = s.taboption('restart_network', form.Flag, 'mod_network_restart_disconnected_at_startup',
+					_('On startup'),
+					_('Restart network if the Internet is disconnected at service startup.')
+				);
+				o.rmempty   = false;
+				o.modalonly = true;
+
 				// Restart modem
 
 				if(this.mm) {
 					if(this.mmInit) {
-						o = s.taboption('restart_modem', form.DummyValue, '_dummy');
-							o.rawhtml = true;
-							o.default = '<div class="cbi-section-descr">' +
-								_('Modem will be restarted when the Internet is disconnected.') +
-								'</div>';
+						o         = s.taboption('restart_modem', form.DummyValue, '_dummy');
+						o.rawhtml = true;
+						o.default = '<div class="cbi-section-descr">' +
+							_('Modem will be restarted when the Internet is disconnected.') +
+							'</div>';
 						o.modalonly = true;
 
 						// enabled
@@ -966,6 +993,30 @@ return view.extend({
 						o.rmempty   = false;
 						o.modalonly = true;
 
+						// attempts
+						o = s.taboption('restart_modem', form.ListValue,
+							'mod_modem_restart_attempts', _('Restart attempts'),
+							_('Maximum number of modem restart attempts before Internet access is available.')
+						);
+						o.modalonly = true;
+						o.value(1);
+						o.value(2);
+						o.value(3);
+						o.value(4);
+						o.value(5);
+						o.value(10);
+						o.value(0, _('infinitely'));
+						o.default = '1';
+
+						// attempt_interval
+						o = s.taboption('restart_modem', this.CBITimeInput,
+							'mod_modem_restart_attempt_interval', _('Attempt interval'),
+							_('Interval between modem restarts.')
+						);
+						o.default   = '15';
+						o.rmempty   = false;
+						o.modalonly = true;
+
 						// iface
 						o = s.taboption('restart_modem', widgets.NetworkSelect, 'mod_modem_restart_iface',
 							_('Interface'),
@@ -973,6 +1024,33 @@ return view.extend({
 						);
 						o.multiple  = false;
 						o.nocreate  = true;
+						o.modalonly = true;
+
+						// iface_timeout
+						o = s.taboption('restart_modem', form.ListValue,
+							'mod_modem_restart_iface_timeout', _('Interface timeout'),
+							_('Timeout between stopping and starting a ModemManger interface when restarting.')
+						);
+						o.modalonly = true;
+						o.value(0,  '0 ' + _('sec'));
+						o.value(1,  '1 ' + _('sec'));
+						o.value(2,  '2 ' + _('sec'));
+						o.value(3,  '3 ' + _('sec'));
+						o.value(4,  '4 ' + _('sec'));
+						o.value(5,  '5 ' + _('sec'));
+						o.value(6,  '6 ' + _('sec'));
+						o.value(7,  '7 ' + _('sec'));
+						o.value(8,  '8 ' + _('sec'));
+						o.value(9,  '9 ' + _('sec'));
+						o.value(10, '10 ' + _('sec'));
+						o.default = '0';
+
+						// disconnected_at_startup
+						o = s.taboption('restart_modem', form.Flag, 'mod_modem_restart_disconnected_at_startup',
+							_('On startup'),
+							_('Restart modem if the Internet is disconnected at service startup.')
+						);
+						o.rmempty   = false;
 						o.modalonly = true;
 					} else {
 						o         = s.taboption('restart_modem', form.DummyValue, '_dummy');
@@ -987,11 +1065,11 @@ return view.extend({
 
 			// Public IP address
 
-			o = s.taboption('public_ip', form.DummyValue, '_dummy');
-				o.rawhtml = true;
-				o.default = '<div class="cbi-section-descr">' +
-					_('Checking the real public IP address.') +
-					'</div>';
+			o         = s.taboption('public_ip', form.DummyValue, '_dummy');
+			o.rawhtml = true;
+			o.default = '<div class="cbi-section-descr">' +
+				_('Checking the real public IP address.') +
+				'</div>';
 			o.modalonly = true;
 
 			// enabled
@@ -1093,11 +1171,11 @@ return view.extend({
 
 				if(this.email) {
 					if(this.emailExec) {
-						o = s.taboption('email', form.DummyValue, '_dummy');
-							o.rawhtml = true;
-							o.default = '<div class="cbi-section-descr">' +
-								_('An email will be sent when connected or disconnected from the Internet.') +
-								'</div>';
+						o         = s.taboption('email', form.DummyValue, '_dummy');
+						o.rawhtml = true;
+						o.default = '<div class="cbi-section-descr">' +
+							_('An email will be sent when connected or disconnected from the Internet.') +
+							'</div>';
 						o.modalonly = true;
 
 						// enabled
@@ -1193,6 +1271,14 @@ return view.extend({
 						o.value('ssl', 'SSL');
 						o.default   = 'tls';
 						o.modalonly = true;
+
+						// message_at_startup
+						o = s.taboption('email', form.Flag, 'mod_email_message_at_startup',
+							_('On startup'),
+							_('Send message on service startup.')
+						);
+						o.rmempty   = false;
+						o.modalonly = true;
 					} else {
 						o         = s.taboption('email', form.DummyValue, '_dummy');
 						o.rawhtml = true;
@@ -1205,11 +1291,11 @@ return view.extend({
 
 				// User scripts
 
-				o = s.taboption('user_scripts', form.DummyValue, '_dummy');
-					o.rawhtml = true;
-					o.default = '<div class="cbi-section-descr">' +
-						_('Shell commands to run when connected or disconnected from the Internet.') +
-						'</div>';
+				o         = s.taboption('user_scripts', form.DummyValue, '_dummy');
+				o.rawhtml = true;
+				o.default = '<div class="cbi-section-descr">' +
+					_('Shell commands to run when connected or disconnected from the Internet.') +
+					'</div>';
 				o.modalonly = true;
 
 				// enabled
@@ -1230,9 +1316,41 @@ return view.extend({
 				// alive_period
 				o = s.taboption('user_scripts', this.CBITimeInput,
 					'mod_user_scripts_alive_period', _('Alive period'),
-					_('Period of time after connecting to Internet before "up-script" runs.')
+					_('Period of time after connecting to Internet before up-script runs.')
 				);
 				o.default   = '0';
+				o.rmempty   = false;
+				o.modalonly = true;
+
+				// up_script_attempts
+				o = s.taboption('user_scripts', form.ListValue,
+					'mod_user_scripts_up_script_attempts', _('up-script attempts'),
+					_('Maximum number of up-script run attempts when connected to the Internet.')
+				);
+				o.modalonly = true;
+				o.value(1);
+				o.value(2);
+				o.value(3);
+				o.value(4);
+				o.value(5);
+				o.value(10);
+				o.value(0, _('infinitely'));
+				o.default = '1';
+
+				// up_script_attempt_interval
+				o = s.taboption('user_scripts', this.CBITimeInput,
+					'mod_user_scripts_up_script_attempt_interval', _('up_script attempt interval'),
+					_('Interval between up-script runs.')
+				);
+				o.default   = '15';
+				o.rmempty   = false;
+				o.modalonly = true;
+
+				// connected_at_startup
+				o = s.taboption('user_scripts', form.Flag, 'mod_user_scripts_connected_at_startup',
+					_('On startup'),
+					_('Run up-script if the Internet is connected at service startup.')
+				);
 				o.rmempty   = false;
 				o.modalonly = true;
 
@@ -1248,9 +1366,41 @@ return view.extend({
 				// dead_period
 				o = s.taboption('user_scripts', this.CBITimeInput,
 					'mod_user_scripts_dead_period', _('Dead period'),
-					_('Period of time after disconnecting from Internet before "down-script" runs.')
+					_('Period of time after disconnecting from Internet before down-script runs.')
 				);
 				o.default   = '0';
+				o.rmempty   = false;
+				o.modalonly = true;
+
+				// down_script_attempts
+				o = s.taboption('user_scripts', form.ListValue,
+					'mod_user_scripts_down_script_attempts', _('down-script attempts'),
+					_('Maximum number of down-script run attempts before Internet access is available.')
+				);
+				o.modalonly = true;
+				o.value(1);
+				o.value(2);
+				o.value(3);
+				o.value(4);
+				o.value(5);
+				o.value(10);
+				o.value(0, _('infinitely'));
+				o.default = '1';
+
+				// down_script_attempt_interval
+				o = s.taboption('user_scripts', this.CBITimeInput,
+					'mod_user_scripts_down_script_attempt_interval', _('down-script attempt interval'),
+					_('Interval between down-script runs.')
+				);
+				o.default   = '15';
+				o.rmempty   = false;
+				o.modalonly = true;
+
+				// disconnected_at_startup
+				o = s.taboption('user_scripts', form.Flag, 'mod_user_scripts_disconnected_at_startup',
+					_('On startup'),
+					_('Run down-script if the Internet is disconnected at service startup.')
+				);
 				o.rmempty   = false;
 				o.modalonly = true;
 
