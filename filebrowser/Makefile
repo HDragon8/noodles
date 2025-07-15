@@ -5,12 +5,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=filebrowser
-PKG_VERSION:=2.33.0
+PKG_VERSION:=2.40.0
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/filebrowser/filebrowser/tar.gz/v${PKG_VERSION}?
-PKG_HASH:=ade96494e7a9e6381feec8b3bb3729287ca3bc449298ab63022a83be0f73ccba
+PKG_HASH:=0219856deb87e5337e119ee1b8942089be147e25c313e6cc70d854e23e82dcdc
 
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
