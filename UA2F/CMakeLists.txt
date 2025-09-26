@@ -6,6 +6,15 @@ set(CMAKE_C_STANDARD 17)
 cmake_policy(SET CMP0135 NEW)
 
 OPTION(UA2F_BUILD_TESTS "Build tests" OFF)
+
+if(DEFINED ENV{CI})
+    # In CI, always enable coverage for all builds
+    set(UA2F_ENABLE_COVERAGE ON CACHE BOOL "Enable code coverage (auto-enabled in CI)" FORCE)
+    message(STATUS "Auto-enabling coverage in CI environment")
+else()
+    OPTION(UA2F_ENABLE_COVERAGE "Enable code coverage" OFF)
+endif()
+
 OPTION(UA2F_ENABLE_UCI "Enable UCI support" ON)
 OPTION(UA2F_NO_CACHE "Disable cache" OFF)
 OPTION(UA2F_ENABLE_BACKTRACE "Enable libbacktrace support" ON)
@@ -80,6 +89,19 @@ add_compile_definitions(UA2F_GIT_DIRTY="${GIT_DIRTY}")
 add_compile_definitions(UA2F_VERSION="${UA2F_VERSION_STR}")
 
 add_compile_options(-fno-omit-frame-pointer -fno-strict-aliasing)
+
+# Coverage configuration
+if (UA2F_ENABLE_COVERAGE)
+    if (CMAKE_C_COMPILER_ID STREQUAL "GNU" OR CMAKE_C_COMPILER_ID STREQUAL "Clang")
+        add_compile_options(--coverage -O0 -g)
+        add_link_options(--coverage)
+        message(STATUS "Code coverage is enabled.")
+    else()
+        message(WARNING "Code coverage is only supported with GCC or Clang.")
+    endif()
+else()
+    message(STATUS "Code coverage is disabled.")
+endif()
 
 if (DEFINED ENV{UA2F_ENABLE_ASAN})
     set(UA2F_ENABLE_ASAN $ENV{UA2F_ENABLE_ASAN})
@@ -191,8 +213,12 @@ if (UA2F_BUILD_TESTS)
             ua2f_test
             test/util_test.cc
             test/cache_test.cc
+            test/statistics_test.cc
+            test/cli_test.cc
             src/util.c
             src/cache.c
+            src/statistics.c
+            src/cli.c
     )
     target_link_libraries(
             ua2f_test
@@ -200,8 +226,54 @@ if (UA2F_BUILD_TESTS)
     )
     target_include_directories(ua2f_test PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
+    # Add coverage target
+    if (UA2F_ENABLE_COVERAGE)
+        add_custom_target(coverage
+            COMMAND echo "Running unit tests to generate coverage data"
+            COMMAND ${CMAKE_CURRENT_BINARY_DIR}/ua2f_test
+            COMMENT "Generating code coverage data"
+            DEPENDS ua2f_test
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        )
+        
+        # Add lcov target for preprocessed coverage data
+        add_custom_target(coverage-lcov
+            COMMAND echo "Running unit tests and generating lcov report"
+            COMMAND ${CMAKE_CURRENT_BINARY_DIR}/ua2f_test
+            COMMAND lcov --capture --directory . --output-file coverage.info --ignore-errors mismatch --branch-coverage
+            COMMAND lcov --remove coverage.info '*/test/*' '*/build*/_deps/*' '/usr/*' '*/googletest/*' '*_deps/*' --output-file coverage.info --ignore-errors unused --branch-coverage
+            COMMAND lcov --list coverage.info --branch-coverage
+            COMMENT "Generating lcov coverage report"
+            DEPENDS ua2f_test
+            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        )
+    endif()
+
     include(GoogleTest)
     gtest_discover_tests(ua2f_test)
 else ()
     message(STATUS "Tests are disabled.")
 endif ()
+
+# Coverage targets for integration testing (independent of unit tests)
+if (UA2F_ENABLE_COVERAGE)
+    add_custom_target(coverage-integration-reset
+        COMMAND find . -name "*.gcda" -delete
+        COMMENT "Reset coverage counters for integration tests"
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    )
+    
+    add_custom_target(coverage-integration-process
+        COMMAND lcov --capture --directory . --output-file coverage-integration.info --ignore-errors mismatch --branch-coverage
+        COMMAND lcov --remove coverage-integration.info '*/test/*' '*/build*/_deps/*' '/usr/*' '*/googletest/*' '*_deps/*' --output-file coverage-integration.info --ignore-errors unused --branch-coverage
+        COMMAND lcov --list coverage-integration.info --branch-coverage
+        COMMENT "Process integration test coverage data with lcov"
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    )
+    
+    add_custom_target(coverage-clean
+        COMMAND find . -name "*.gcda" -delete
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+        COMMENT "Cleaning coverage data"
+    )
+endif()
