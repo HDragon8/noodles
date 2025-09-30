@@ -138,7 +138,7 @@ git clone --depth 1 https://github.com/messense/aliyundrive-fuse aliyundrive && 
 git clone --depth 1 https://github.com/kenzok8/litte && mv -n litte/luci-theme-atmaterial_new litte/luci-theme-tomato ./ ; rm -rf litte
 git clone --depth 1 https://github.com/fw876/helloworld && mv -n helloworld/luci-app-ssr-plus ./ ; rm -rf helloworld
 #git clone --depth 1 https://github.com/QiuSimons/openwrt-mos && mv -n openwrt-mos/luci-app-mosdns ./ ; rm -rf openwrt-mos
-git clone --depth 1 https://github.com/sbwml/luci-app-mosdns openwrt-mos && mv -n openwrt-mos/{*mosdns,v2dat} ./; rm -rf openwrt-mos
+#git clone --depth 1 https://github.com/sbwml/luci-app-mosdns openwrt-mos && mv -n openwrt-mos/{*mosdns,v2dat} ./; rm -rf openwrt-mos
 git clone --depth 1 https://github.com/xiaorouji/openwrt-passwall2 passwall2 && mv -n passwall2/luci-app-passwall2 ./;rm -rf passwall2
 git clone --depth 1 https://github.com/xiaorouji/openwrt-passwall passwall1 && mv -n passwall1/luci-app-passwall  ./; rm -rf passwall1
 git clone --depth 1 https://github.com/SSSSSimon/tencentcloud-openwrt-plugin-ddns && mv -n tencentcloud-openwrt-plugin-ddns/tencentcloud_ddns ./luci-app-tencentddns; rm -rf tencentcloud-openwrt-plugin-ddns
@@ -158,6 +158,12 @@ git clone --depth 1 https://github.com/sbwml/luci-app-airconnect airconnect1 && 
 git clone --depth 1 https://github.com/sirpdboy/luci-theme-kucat -b js --depth 1
 git clone --depth 1 https://github.com/blueberry-pie-11/luci-app-natmap
 git clone --depth 1 https://github.com/QiuSimons/luci-app-daed-next daed1 && mvdir daed1
+
+#mosdns
+rm -rf v2ray-geodata
+rm -rf mosdns && rm -rf luci-app-mosdns
+git clone --depth 1 -b v5 https://github.com/sbwml/luci-app-mosdns openwrt-mos && mv -n openwrt-mos/{*mosdns,v2dat} ./; rm -rf openwrt-mos
+git clone --depth 1 https://github.com/sbwml/v2ray-geodata
 
 #svn export https://github.com/coolsnowwolf/luci/trunk/libs/luci-lib-ipkg
 #svn export https://github.com/x-wrt/packages/trunk/net/nft-qos
