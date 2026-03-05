@@ -34,14 +34,36 @@ local ss_type = ucic:get_first(name, 'server_subscribe', 'ss_type', 'ss-rust')
 -- 根据 ss_type 选择对应的程序
 local ss_program = "sslocal"
 if ss_type == "ss-rust" then
-    ss_program = "sslocal"  -- Rust 版本使用 sslocal
+	ss_program = "sslocal"  -- Rust 版本使用 sslocal
 elseif ss_type == "ss-libev" then
-    ss_program = "ss-redir"  -- Libev 版本使用 ss-redir
+	ss_program = "ss-redir"  -- Libev 版本使用 ss-redir
+end
+-- 从 UCI 配置读取 xray_hy2_type 设置
+local xray_hy2_type = ucic:get_first(name, 'server_subscribe', 'xray_hy2_type', 'hysteria2')
+local xray_hy2_program = "hysteria"
+if xray_hy2_type == "xray" then
+	xray_hy2_program = "xray"  -- Hysteria2 使用 Xray
+elseif xray_hy2_type == "hysteria2" then
+	xray_hy2_program = "hysteria"  -- Hysteria2 使用 Hysteria
 end
 local v2_ss = luci.sys.exec('type -t -p ' .. ss_program .. ' 2>/dev/null') ~= "" and "ss" or "v2ray"
 local has_ss_type = luci.sys.exec('type -t -p ' .. ss_program .. ' 2>/dev/null') ~= "" and ss_type
 local v2_tj = luci.sys.exec('type -t -p trojan') ~= "" and "trojan" or "v2ray"
-local hy2_type = luci.sys.exec('type -t -p hysteria') ~= "" and "hysteria2"
+-- 检查程序是否存在
+local program_exists = luci.sys.exec('type -t -p ' .. xray_hy2_program .. ' 2>/dev/null') ~= ""
+-- 初始化变量
+local hy2_type = nil
+local has_xray_hy2_type = nil
+if program_exists then
+	-- 设置节点类型
+	if xray_hy2_type == "hysteria2" then
+		hy2_type = "hysteria2"
+	else
+		hy2_type = "v2ray"  -- 当使用 Xray 时，节点类型是 "v2ray"
+		has_xray_hy2_type = "hysteria2"  -- 可用的协议类型是 Hysteria2
+	end
+end
+local tuic_type = luci.sys.exec('type -t -p tuic-client') ~= "" and "tuic"
 local log = function(...)
 	print(os.date("%Y-%m-%d %H:%M:%S ") .. table.concat({...}, " "))
 end
@@ -193,19 +215,29 @@ local function processData(szType, content)
 		--	log(k.."="..v)
 		-- end
 
-		-- 如果 hy2 程序未安装则跳过订阅	
-		if not hy2_type then
+		-- 如果 hy2 程序未安装则跳过订阅
+		if not (hy2_type or has_xray_hy2_type) then
 			return nil
+		end
+	
+		if xray_hy2_type == "hysteria2" then
+			if params.protocol then
+				result.flag_transport = "1"
+				result.transport_protocol = params.protocol or "udp"
+			end
+			if params.pinSHA256 then
+				result.pinsha256 = params.pinSHA256
+			end
+		else
+			result.v2ray_protocol = has_xray_hy2_type
 		end
 
 		result.alias = url.fragment and UrlDecode(url.fragment) or nil
+		result.xray_hy2_type = xray_hy2_type
 		result.type = hy2_type
 		result.server = url.host
 		result.server_port = url.port or 443
-		if params.protocol then
-			result.flag_transport = "1"
-			result.transport_protocol = params.protocol or "udp"
-		end
+
 		result.hy2_auth = url.user
 		result.uplink_capacity = tonumber((params.upmbps or ""):match("^(%d+)")) or nil
 		result.downlink_capacity = tonumber((params.downmbps or ""):match("^(%d+)")) or nil
@@ -218,24 +250,41 @@ local function processData(szType, content)
 			result.obfs_type = params.obfs
 			result.salamander = params["obfs-password"] or params["obfs_password"]
 		end
-		if (params.sni and params.sni ~= "") or (params.alpn and params.alpn ~= "") then
+		if (params.security and params.security:lower() == "tls")
+				or (params.sni and params.sni ~= "")
+				or (params.alpn and params.alpn ~= "")
+				or (xray_hy2_type == "hysteria2" and (params.pcs or params.vcn)) then
 			result.tls = "1"
 			if params.sni then
 				result.tls_host = params.sni
 			end
-			if params.alpn then
+			if params.alpn and params.alpn ~= "" then
 				local alpn = {}
 				for v in params.alpn:gmatch("[^,;|%s]+") do
 					table.insert(alpn, v)
 				end
-				result.tls_alpn = alpn
+				if #alpn > 0 then
+					result.tls_alpn = table.concat(alpn, ",")  -- 确保为字符串
+				end
+			end
+			if xray_hy2_type ~= "hysteria2" then
+				if params.pcs then
+					result.tls_CertSha = params.pcs
+				end
+				if params.vcn then
+					result.tls_CertByName = params.vcn
+				end
 			end
 		end
-		if params.insecure == "1" then
-			result.insecure = params.insecure
+		if params.allowInsecure or params.insecure then
+			local insecure = params.allowInsecure or params.insecure
+			if insecure == true or insecure == "1" or insecure == "true" then
+				result.insecure = "1"
+			end
 		end
-		if params.pinSHA256 then
-			result.pinsha256 = params.pinSHA256
+		if params.tfo then
+			-- 处理 fast open 参数
+			result.fast_open = params.tfo
 		end
 	elseif szType == 'ssr' then
 		-- 去掉前后空白和#注释
@@ -264,6 +313,11 @@ local function processData(szType, content)
 		result.obfs_param = base64Decode(params.obfsparam or '')
 		result.protocol_param = base64Decode(params.protoparam or '')
 
+		if params.tfo then
+			-- 处理 fast open 参数
+			result.fast_open = params.tfo
+		end
+
 		local group = base64Decode(params.group or '')
 		local remarks = base64Decode(params.remarks or '')
 
@@ -275,12 +329,18 @@ local function processData(szType, content)
 		alias = alias .. remarks
 		result.alias = alias
 	elseif szType == "vmess" then
-		-- 去掉前后空白和#注释
+		-- 去掉前后空白和注释
 		local link = trim(content:gsub("#.*$", ""))
 
-		-- 解析正常节点
-		local success, info = pcall(jsonParse, link)
-		if not success or type(info) ~= "table" then
+		-- Base64 解码
+		local decoded = base64Decode(link)
+		if not decoded or decoded == "" then
+			return nil
+		end
+
+		-- 解析 JSON
+		local ok, info = pcall(jsonParse, decoded)
+		if not ok or type(info) ~= "table" then
 			return nil
 		end
 
@@ -317,8 +377,10 @@ local function processData(szType, content)
 			result.xhttp_host = info.host
 			result.xhttp_path = info.path
 			-- 检查 extra 参数是否存在且非空
-			result.enable_xhttp_extra = (info.extra and info.extra ~= "") and "1" or nil
-			result.xhttp_extra = (info.extra and info.extra ~= "") and info.extra or nil
+			if info.extra and info.extra ~= "" then
+				result.enable_xhttp_extra = "1"
+				result.xhttp_extra = info.extra
+			end
 			-- 尝试解析 JSON 数据
 			local success, Data = pcall(jsonParse, info.extra or "")
 			if success and type(Data) == "table" then
@@ -342,7 +404,10 @@ local function processData(szType, content)
 			end
 		end
 		if info.net == 'kcp' then
-			result.kcp_guise = info.type
+			result.kcp_guise = info.type or "none"
+			if info.type and info.type == "dns" then
+				result.kcp_guise = info.host or ""
+			end
 			result.mtu = 1350
 			result.tti = 50
 			result.uplink_capacity = 5
@@ -373,7 +438,9 @@ local function processData(szType, content)
 				for v in info.alpn:gmatch("[^,]+") do
 					table.insert(alpn, v)
 				end
-				result.tls_alpn = alpn
+				if #alpn > 0 then
+					result.tls_alpn = table.concat(alpn, ",")  -- 确保为字符串
+				end
 			end
 			if info.sni and info.sni ~= "" then
 				result.tls_host = info.sni
@@ -384,9 +451,15 @@ local function processData(szType, content)
 				result.enable_ech = "1"
 				result.ech_config = info.ech
 			end
+			if info.pcs and info.pcs ~= "" then
+				result.tls_CertSha = info.pcs
+			end
+			if info.vcn and info.vcn ~= "" then
+				result.tls_CertByName = info.vcn
+			end
 			-- 兼容 allowInsecure / allowlnsecure / skip-cert-verify
-			if info.allowInsecure or info.allowlnsecure or info["skip-cert-verify"] then
-				local insecure = info.allowInsecure or info.allowlnsecure or info["skip-cert-verify"]
+			if info.allowInsecure or info.allowlnsecure or info.insecure or info["skip-cert-verify"] then
+				local insecure = info.allowInsecure or info.allowlnsecure or info.insecure or info["skip-cert-verify"]
 				if insecure == true or insecure == "1" or insecure == "true" then
 					result.insecure = "1"
 				end
@@ -394,24 +467,22 @@ local function processData(szType, content)
 		else
 			result.tls = "0"
 		end
-		-- 其它可选安全字段
-		if info.security then
-			result.security = info.security
-		end
 	elseif szType == "ss" then
 		local idx_sp = content:find("#") or 0
 		local alias = ""
 		if idx_sp > 0 then
-			alias = UrlDecode(content:sub(idx_sp + 1))
+			alias = content:sub(idx_sp + 1, -1)
+			content = content:sub(0, idx_sp - 1):gsub("/%?", "?")
 		end
-		local info = content:sub(1, idx_sp > 0 and idx_sp - 1 or #content):gsub("/%?", "?")
+		result.alias = UrlDecode(alias)
 
 		-- 拆 base64 主体和 ? 参数部分
-		local uri_main, query_str = info:match("^([^?]+)%??(.*)$")
-		--log("SS 节点格式:", uri_main)
+		local info = content
+		local find_index, query = info:match("^([^?]+)%??(.*)$")
+		--log("SS 节点格式:", find_index)
 		local params = {}
-		if query_str and query_str ~= "" then
-			for _, v in ipairs(split(query_str, '&')) do
+		if query and query ~= "" then
+			for _, v in ipairs(split(query, '&')) do
 				local t = split(v, '=')
 				if #t >= 2 then
 					params[t[1]] = UrlDecode(t[2])
@@ -420,28 +491,28 @@ local function processData(szType, content)
 		end
 
 		if not params.type or params.type == "" then
-			local is_old_format = uri_main:find("@") and not uri_main:find("://.*@")
-			local base64_str, host_port, userinfo, server, port, method, password
+			local is_old_format = find_index:find("@") and not find_index:find("://.*@")
+			local old_base64, host_port, userinfo, server, port, method, password
 
 			if is_old_format then
 				-- 旧格式：base64(method:pass)@host:port
-				base64_str, host_port = uri_main:match("^([^@]+)@(.-)$")
-				log("SS 节点旧格式解析:", base64_str)
-				if not base64_str or not host_port then
-					log("SS 节点旧格式解析失败:", uri_main)
+				old_base64, host_port = find_index:match("^([^@]+)@(.-)$")
+				log("SS 节点旧格式解析:", old_base64)
+				if not old_base64 or not host_port then
+					log("SS 节点旧格式解析失败:", find_index)
 					return nil
 				end
-				local decoded = base64Decode(UrlDecode(base64_str))
+				local decoded = base64Decode(UrlDecode(old_base64))
 				if not decoded then
-					log("SS base64 解码失败（旧格式）:", base64_str)
+					log("SS base64 解码失败（旧格式）:", old_base64)
 					return nil
 				end
 				userinfo = decoded
 			else
 				-- 新格式：base64(method:pass@host:port)
-				local decoded = base64Decode(UrlDecode(uri_main))
+				local decoded = base64Decode(UrlDecode(find_index))
 				if not decoded then
-					log("SS base64 解码失败（新格式）:", uri_main)
+					log("SS base64 解码失败（新格式）:", find_index)
 					return nil
 				end
 				userinfo, host_port = decoded:match("^(.-)@(.-)$")
@@ -452,13 +523,13 @@ local function processData(szType, content)
 			end
 
 			-- 解析加密方式和密码（允许密码包含冒号）
-			local split_pos = userinfo:find(":")
-			if not split_pos then
+			local meth_pass = userinfo:find(":")
+			if not meth_pass then
 				log("SS 用户信息格式错误:", userinfo)
 				return nil
 			end
-			method = userinfo:sub(1, split_pos - 1)
-			password = userinfo:sub(split_pos + 1)
+			method = userinfo:sub(1, meth_pass - 1)
+			password = userinfo:sub(meth_pass + 1)
 
 			-- 判断密码是否经过url编码
 			local function isURLEncodedPassword(pwd)
@@ -491,21 +562,16 @@ local function processData(szType, content)
 			end
 
 			-- 填充 result
-			result.alias = alias
 			result.type = v2_ss
-			result.v2ray_protocol = (v2_ss == "v2ray") and "shadowsocks" or nil
 			result.has_ss_type = has_ss_type
 			result.encrypt_method_ss = method
 			result.password = password
 			result.server = server
 			result.server_port = port
 
-			-- 仅在 v2ray + shadowsocks 协议时处理 ECH
-			if v2_ss == "v2ray" and result.v2ray_protocol == "shadowsocks" then
-				if params.ech and params.ech ~= "" then
-					result.enable_ech = "1"
-					result.ech_config = ech
-				end
+			if params.tfo then
+				-- 处理 fast open 参数
+				result.fast_open = params.tfo
 			end
 
 			-- 插件处理
@@ -572,17 +638,17 @@ local function processData(szType, content)
 			local url = URL.parse("http://" .. info)
 			local params = url.query
 
-			result.alias = alias
-			result.type = "v2ray"
+			v2_ss = "v2ray"
+			result.type = v2_ss
 			result.v2ray_protocol = "shadowsocks"
 			result.server = url.host
 			result.server_port = url.port
 
 			-- 判断 @ 前部分是否为 Base64
-			local is_base64_decoded = base64Decode(UrlDecode(url.user))
-			if is_base64_decoded:find(":") then
+			local is_base64 = base64Decode(UrlDecode(url.user))
+			if is_base64:find(":") then
         		-- 新格式：method:password
-        		result.encrypt_method_ss, result.password = is_base64_decoded:match("^(.-):(.*)$")
+        		result.encrypt_method_ss, result.password = is_base64:match("^(.-):(.*)$")
 			else
         		-- 旧格式：UUID 直接作为密码
         		result.password = url.user
@@ -602,7 +668,15 @@ local function processData(szType, content)
 				for v in params.alpn:gmatch("[^,;|%s]+") do
 					table.insert(alpn, v)
 				end
-				result.tls_alpn = params.alpn
+				if #alpn > 0 then
+					result.tls_alpn = table.concat(alpn, ",")  -- 确保为字符串
+				end
+			end
+			if params.pcs and params.pcs ~= "" then
+				result.tls_CertSha = params.pcs
+			end
+			if params.vcn and params.vcn ~= "" then
+				result.tls_CertByName = params.vcn
 			end
 			result.tls_host = params.sni
 			result.tls_flow = (params.security == "tls" or params.security == "reality") and params.flow or nil
@@ -612,11 +686,21 @@ local function processData(szType, content)
 			result.reality_shortid = params.sid
 			result.reality_spiderx = params.spx and UrlDecode(params.spx) or nil
 			-- 检查 ech 参数是否存在且非空
-			result.enable_ech = (params.ech and params.ech ~= "") and "1" or nil
-			result.ech_config = (params.ech and params.ech ~= "") and params.ech or nil
+			if params.ech and params.ech ~= "" then
+				result.enable_ech = "1"
+				result.ech_config = params.ech
+			end
 			-- 检查 pqv 参数是否存在且非空
-			result.enable_mldsa65verify = (params.pqv and params.pqv ~= "") and "1" or nil
-			result.reality_mldsa65verify = (params.pqv and params.pqv ~= "") and params.pqv or nil
+			if params.pqv and params.pqv ~= "" then
+				result.enable_mldsa65verify = "1"
+				result.reality_mldsa65verify = params.pqv
+			end
+			if params.allowInsecure or params.insecure then
+				local insecure = params.allowInsecure or params.insecure
+				if insecure == true or insecure == "1" or insecure == "true" then
+					result.insecure = "1"
+				end
+			end
 			if result.transport == "ws" then
 				result.ws_host = (result.tls ~= "1") and (params.host and UrlDecode(params.host)) or nil
 				result.ws_path = params.path and UrlDecode(params.path) or "/"
@@ -624,12 +708,14 @@ local function processData(szType, content)
 				result.httpupgrade_host = (result.tls ~= "1") and (params.host and UrlDecode(params.host)) or nil
 				result.httpupgrade_path = params.path and UrlDecode(params.path) or "/"
 			elseif result.transport == "xhttp" or result.transport == "splithttp" then
-				result.xhttp_host = (result.tls ~= "1") and (params.host and UrlDecode(params.host)) or nil
 				result.xhttp_mode = params.mode or "auto"
+				result.xhttp_host = params.host and UrlDecode(params.host) or nil
 				result.xhttp_path = params.path and UrlDecode(params.path) or "/"
 				-- 检查 extra 参数是否存在且非空
-				result.enable_xhttp_extra = (params.extra and params.extra ~= "") and "1" or nil
-				result.xhttp_extra = (params.extra and params.extra ~= "") and params.extra or nil
+				if params.extra and params.extra ~= "" then
+					result.enable_xhttp_extra = "1"
+					result.xhttp_extra = params.extra
+				end
 				-- 尝试解析 JSON 数据
 				local success, Data = pcall(jsonParse, params.extra or "")
 				if success and type(Data) == "table" then
@@ -647,6 +733,9 @@ local function processData(szType, content)
 				result.h2_path = params.path and UrlDecode(params.path) or nil
 			elseif result.transport == "kcp" then
 				result.kcp_guise = params.headerType or "none"
+				if params.headerType and params.headerType == "dns" then
+					result.kcp_domain = params.host or ""
+				end
 				result.seed = params.seed
 				result.mtu = 1350
 				result.tti = 50
@@ -702,78 +791,73 @@ local function processData(szType, content)
 			result.server = nil
 		end
 	elseif szType == "trojan" then
-		local params = {}
-		local idx_sp = 0
-		local alias = ""
-
 		-- 提取别名（如果存在）
+		local alias = ""
 		if content:find("#") then
-			idx_sp = content:find("#")
+			local idx_sp = content:find("#")
 			alias = content:sub(idx_sp + 1, -1)
+			content = content:sub(0, idx_sp - 1)
 		end
-		local info = content:sub(1, idx_sp > 0 and idx_sp - 1 or #content)
-		local hostInfo = split(info, "@")
-
-		-- 基础验证
-		if #hostInfo < 2 then
-			--log("Trojan节点格式错误: 缺少@符号")
-			return nil
-		end
-
-		local userinfo = hostInfo[1]
-		local hostPort = hostInfo[2]
-		
-		-- 分离服务器地址和端口
-		local hostParts = split(hostPort, ":")
-
-		-- 验证服务器地址和端口
-		if #hostParts < 2 then
-			--log("Trojan节点格式错误: 缺少端口号")
-			return nil
-		end
-
-		local server = hostParts[1]
-		local port = hostParts[2]
-
 		result.alias = UrlDecode(alias)
-		result.server = server
-		result.password = userinfo
 
-		-- 默认设置
-		-- 按照官方的建议 默认验证ssl证书
-		result.insecure = "0"
-		result.tls = "1"
+		-- 分离和提取 password		
+		local Info = content
+		local params = {} 
+		if Info:find("@") then
+			local contents = split(Info, "@")
+			result.password = UrlDecode(contents[1])
+			local port = "443"
+			Info = (contents[2] or ""):gsub("/%?", "?")
 
-		-- 解析查询参数（如果存在）
-		if port:find("?") then
-			local queryParts = split(port, "?")
-			result.server_port = queryParts[1]
-
-			-- 解析查询参数
-			for _, v in pairs(split(queryParts[2], "&")) do
-				local t = split(v, "=")
-				if #t >= 2 then
-					params[t[1]] = t[2]
+			-- 分离主机和 query 参数（key=value&key2=value2）
+			local query = split(Info, "%?")
+			local host_port = query[1]
+			for _, v in pairs(split(query[2], '&')) do
+				local t = split(v, '=')
+				if #t > 1 then
+					params[string.lower(t[1])] = UrlDecode(t[2])
 				end
 			end
 
+			-- 提取服务器地址和端口
+			if host_port:find(":") then
+				local sp = split(host_port, ":")
+				result.server_port = sp[#sp]
+				result.server = sp[1]
+			else
+				result.server = host_port
+			end
+
+			-- 默认设置
+			-- 按照官方的建议 默认验证ssl证书
+			result.insecure = "0"
+			result.tls = "1"
+
 			-- 处理参数
-			if params.alpn then
+			if params.alpn and params.alpn ~= "" then
 				-- 处理 alpn 参数
-				result.tls_alpn = params.alpn
+				local alpn = {}
+				for v in params.alpn:gmatch("[^,;|%s]+") do
+					table.insert(alpn, v)
+				end
+				if #alpn > 0 then
+					result.tls_alpn = table.concat(alpn, ",")  -- 确保为字符串
+				end
 			end
 
-			if params.sni then
+			if params.peer or params.sni then
 				-- 未指定peer（sni）默认使用remote addr
-				result.tls_host = params.sni
+				result.tls_host = params.peer or params.sni
 			end
-
-			if params.allowInsecure then
-				-- 处理 insecure 参数
-				result.insecure = params.allowInsecure
+			-- 处理 insecure 参数
+			if params.allowInsecure or params.allowinsecure or params.insecure then
+				local insecure = params.allowInsecure or params.allowinsecure or params.insecure
+				if insecure == true or insecure == "1" or insecure == "true" then
+					result.insecure = "1"
+				end
 			end
 			if params.tfo then
-				-- 处理 insecure 参数
+				-- 处理 fast open 参数
 				result.fast_open = params.tfo
 			end
 		else
@@ -795,7 +879,7 @@ local function processData(szType, content)
 					result.fingerprint = params.fp
 				end
 				-- 处理 ech 参数
-				if params.ech then
+				if params.ech and params.ech ~= "" then
 					result.enable_ech = "1"
 					result.ech_config = params.ech
 				end
@@ -807,6 +891,12 @@ local function processData(szType, content)
 				if result.transport == "splithttp" then
 					result.transport = "xhttp"
 				end
+				if params.pcs and params.pcs ~= "" then
+					result.tls_CertSha = params.pcs
+				end
+				if params.vcn and params.vcn ~= "" then
+					result.tls_CertByName = params.vcn
+				end
 				if result.transport == "ws" then
 					result.ws_host = (result.tls ~= "1") and (params.host and UrlDecode(params.host)) or nil
 					result.ws_path = params.path and UrlDecode(params.path) or "/"
@@ -814,12 +904,14 @@ local function processData(szType, content)
 					result.httpupgrade_host = (result.tls ~= "1") and (params.host and UrlDecode(params.host)) or nil
 					result.httpupgrade_path = params.path and UrlDecode(params.path) or "/"
 				elseif result.transport == "xhttp" or result.transport == "splithttp" then
-					result.xhttp_host = (result.tls ~= "1") and (params.host and UrlDecode(params.host)) or nil
 					result.xhttp_mode = params.mode or "auto"
+					result.xhttp_host = params.host and UrlDecode(params.host) or nil
 					result.xhttp_path = params.path and UrlDecode(params.path) or "/"
 					-- 检查 extra 参数是否存在且非空
-					result.enable_xhttp_extra = (params.extra and params.extra ~= "") and "1" or nil
-					result.xhttp_extra = (params.extra and params.extra ~= "") and params.extra or nil
+					if params.extra and params.extra ~= "" then
+						result.enable_xhttp_extra = "1"
+						result.xhttp_extra = params.extra
+					end
 					-- 尝试解析 JSON 数据
 					local success, Data = pcall(jsonParse, params.extra or "")
 					if success and type(Data) == "table" then
@@ -836,6 +928,9 @@ local function processData(szType, content)
 					result.h2_path = params.path and UrlDecode(params.path) or nil
 				elseif result.transport == "kcp" then
 					result.kcp_guise = params.headerType or "none"
+					if params.headerType and params.headerType == "dns" then
+						result.kcp_domain = params.host or ""
+					end
 					result.seed = params.seed
 					result.mtu = 1350
 					result.tti = 50
@@ -872,64 +967,114 @@ local function processData(szType, content)
 		result.server_port = url.port
 		result.vmess_id = url.user
 		result.vless_encryption = params.encryption or "none"
+
+		-- 处理传输类型
 		result.transport = params.type or "raw"
 		if result.transport == "tcp" then
 			result.transport = "raw"
-		end
-		if result.transport == "splithttp" then
+		elseif result.transport == "splithttp" then
 			result.transport = "xhttp"
+		elseif result.transport == "http" then
+			result.transport = "h2"
 		end
-		result.tls = (params.security == "tls" or params.security == "xtls") and "1" or "0"
+
+		-- TLS / Reality 标志
+		local security = params.security or ""
+		result.tls = (security == "tls" or security == "xtls") and "1" or "0"
+		result.reality = (security == "reality") and "1" or "0"
+
+		-- 统一 TLS / Reality 公共字段
+		result.tls_host = params.sni
+		result.fingerprint = params.fp
+		result.tls_flow = params.flow or nil
+
+		-- 处理 alpn 列表
 		if params.alpn and params.alpn ~= "" then
 			local alpn = {}
 			for v in params.alpn:gmatch("[^,;|%s]+") do
 				table.insert(alpn, v)
 			end
-			result.tls_alpn = alpn
+			if #alpn > 0 then
+				result.tls_alpn = table.concat(alpn, ",")  -- 确保为字符串
+			end
 		end
-		result.tls_host = params.sni
-		result.tls_flow = (params.security == "tls" or params.security == "reality") and params.flow or nil
-		result.fingerprint = params.fp
-		result.reality = (params.security == "reality") and "1" or "0"
-		result.reality_publickey = params.pbk and UrlDecode(params.pbk) or nil
-		result.reality_shortid = params.sid
-		result.reality_spiderx = params.spx and UrlDecode(params.spx) or nil
-		-- 检查 ech 参数是否存在且非空
-		result.enable_ech = (params.ech and params.ech ~= "") and "1" or nil
-		result.ech_config = (params.ech and params.ech ~= "") and params.ech or nil
-		-- 检查 pqv 参数是否存在且非空
-		result.enable_mldsa65verify = (params.pqv and params.pqv ~= "") and "1" or nil
-		result.reality_mldsa65verify = (params.pqv and params.pqv ~= "") and params.pqv or nil
+
+		-- 处理 insecure 参数
+		if params.allowInsecure or params.insecure then
+			local insecure = params.allowInsecure or params.insecure
+			if insecure == true or insecure == "1" or insecure == "true" then
+				result.insecure = "1"
+			end
+		end
+
+		-- 处理 pinsha256 参数
+		if params.pcs and params.pcs ~= "" then
+			result.tls_CertSha = params.pcs
+		end
+
+		-- 处理 Leaf Certificate Name 参数
+		if params.vcn and params.vcn ~= "" then
+			result.tls_CertByName = params.vcn
+		end
+
+		-- Reality 参数
+		if security == "reality" then
+			result.reality_publickey = params.pbk and UrlDecode(params.pbk) or nil
+			result.reality_shortid = params.sid
+			result.reality_spiderx = params.spx and UrlDecode(params.spx) or nil
+
+			-- PQ 验证参数
+			if params.pqv and params.pqv ~= "" then
+				result.enable_mldsa65verify = "1"
+				result.reality_mldsa65verify = params.pqv
+			end
+		end
+
+		-- ECH 参数（TLS 才有）
+		if security == "tls" and params.ech and params.ech ~= "" then
+			result.enable_ech = "1"
+			result.ech_config = params.ech
+		end
+
+		-- 各种传输类型
 		if result.transport == "ws" then
-			result.ws_host = (result.tls ~= "1") and (params.host and UrlDecode(params.host)) or nil
+			result.ws_host = (result.tls ~= "1" and result.reality ~= "1") and (params.host and UrlDecode(params.host)) or nil
 			result.ws_path = params.path and UrlDecode(params.path) or "/"
+
 		elseif result.transport == "httpupgrade" then
-			result.httpupgrade_host = (result.tls ~= "1") and (params.host and UrlDecode(params.host)) or nil
+			result.httpupgrade_host = (result.tls ~= "1" and result.reality ~= "1") and (params.host and UrlDecode(params.host)) or nil
 			result.httpupgrade_path = params.path and UrlDecode(params.path) or "/"
-		elseif result.transport == "xhttp" or result.transport == "splithttp" then
-			result.xhttp_host = (result.tls ~= "1") and (params.host and UrlDecode(params.host)) or nil
+
+		elseif result.transport == "xhttp" then
 			result.xhttp_mode = params.mode or "auto"
+			result.xhttp_host = params.host and UrlDecode(params.host) or nil
 			result.xhttp_path = params.path and UrlDecode(params.path) or "/"
-			-- 检查 extra 参数是否存在且非空
-			result.enable_xhttp_extra = (params.extra and params.extra ~= "") and "1" or nil
-			result.xhttp_extra = (params.extra and params.extra ~= "") and params.extra or nil
-			-- 尝试解析 JSON 数据
+			if params.tfo then
+				-- 处理 fast open 参数
+				result.fast_open = params.tfo
+			end
+			if params.extra and params.extra ~= "" then
+				result.enable_xhttp_extra = "1"
+				result.xhttp_extra = params.extra
+			end
 			local success, Data = pcall(jsonParse, params.extra or "")
 			if success and type(Data) == "table" then
 				local address = (Data.extra and Data.extra.downloadSettings and Data.extra.downloadSettings.address)
 					or (Data.downloadSettings and Data.downloadSettings.address)
 				result.download_address = address and address ~= "" and address or nil
 			else
-				-- 如果解析失败，清空下载地址
 				result.download_address = nil
 			end
-		-- make it compatible with bullshit, "h2" transport is non-existent at all
-		elseif result.transport == "http" or result.transport == "h2" then
-			result.transport = "h2"
+
+		elseif result.transport == "h2" then
 			result.h2_host = params.host and UrlDecode(params.host) or nil
 			result.h2_path = params.path and UrlDecode(params.path) or nil
+
 		elseif result.transport == "kcp" then
 			result.kcp_guise = params.headerType or "none"
+			if params.headerType and params.headerType == "dns" then
+				result.kcp_domain = params.host or ""
+			end
 			result.seed = params.seed
 			result.mtu = 1350
 			result.tti = 50
@@ -937,18 +1082,125 @@ local function processData(szType, content)
 			result.downlink_capacity = 20
 			result.read_buffer_size = 2
 			result.write_buffer_size = 2
+
 		elseif result.transport == "quic" then
 			result.quic_guise = params.headerType or "none"
 			result.quic_security = params.quicSecurity or "none"
 			result.quic_key = params.key
+
 		elseif result.transport == "grpc" then
 			result.serviceName = params.serviceName
 			result.grpc_mode = params.mode or "gun"
-		elseif result.transport == "tcp" or result.transport == "raw" then
+
+		elseif result.transport == "raw" then
 			result.tcp_guise = params.headerType or "none"
 			if result.tcp_guise == "http" then
 				result.tcp_host = params.host and UrlDecode(params.host) or nil
 				result.tcp_path = params.path and UrlDecode(params.path) or nil
+			end
+		end
+	elseif szType == "tuic" then
+		-- 提取别名（如果存在）
+		local alias = ""
+		if content:find("#") then
+			local idx_sp = content:find("#")
+			alias = content:sub(idx_sp + 1, -1)
+			content = content:sub(0, idx_sp - 1)
+		end
+		result.alias = UrlDecode(alias)
+
+		-- 分离和提取 uuid 和 password
+		local Info = content
+		if Info:find("@") then
+			local contents = split(Info, "@")
+			local userinfo_raw = UrlDecode(contents[1] or "") -- 如有Url编码进行解码
+			if userinfo_raw:find(":") then
+				local userinfo = split(userinfo_raw, ":")
+				result.tuic_uuid = userinfo[1]
+				result.tuic_passwd = userinfo[2]
+			end
+			Info = (contents[2] or ""):gsub("/%?", "?")
+		end
+
+		-- 分离主机和 query 参数（key=value&key2=value2）
+		local query = split(Info, "%?")
+		local host_port = query[1]
+		local params = {}
+		for _, v in pairs(split(query[2], '&')) do
+			local t = split(v, '=')
+			if #t > 1 then
+				params[string.lower(t[1])] = UrlDecode(t[2])
+			end
+		end
+
+		-- 提取服务器地址和端口
+		if host_port:find(":") then
+			local sp = split(host_port, ":")
+			result.server_port = sp[#sp]
+			result.server = sp[1]
+		else
+			result.server = host_port
+		end
+
+		result.type = tuic_type
+		result.tuic_ip = params.ip or ""
+		result.udp_relay_mode = params.udp_relay_mode or "native"
+		result.congestion_control = params.congestion_control or "cubic"
+		result.heartbeat = params.heartbeat or "3"
+		result.timeout = params.timeout or "8"
+		result.gc_interval = params.gc_interval or "3"
+		result.gc_lifetime = params.gc_lifetime or "15"
+		result.send_window = params.send_window or "20971520"
+		result.receive_window = params.receive_window or "10485760"
+		result.tuic_max_package_size = params.max_packet_size or "1500"
+
+		-- alpn 支持逗号或分号分隔
+		if params.alpn and params.alpn ~= "" then
+			local alpn = {}
+			for v in params.alpn:gmatch("[^,;|%s]+") do
+				table.insert(alpn, v)
+			end
+			if #alpn > 0 then
+				result.tls_alpn = table.concat(alpn, ",")  -- 确保为字符串
+			end
+		end
+
+		-- 处理 disable_sni 参数
+		if params.disable_sni then
+			if params.disable_sni == "1" or params.disable_sni == "0" then
+				result.disable_sni = params.disable_sni
+		else
+				result.disable_sni = string.lower(params.disable_sni) == "true" and "1" or "0"
+			end
+		end
+
+		-- 处理 zero_rtt_handshake 参数
+		if params.zero_rtt_handshake then
+			if params.zero_rtt_handshake == "1" or params.zero_rtt_handshake == "0" then
+				result.zero_rtt_handshake = params.zero_rtt_handshake
+		else
+				result.zero_rtt_handshake = string.lower(params.zero_rtt_handshake) == "true" and "1" or "0"
+			end
+		end
+
+		-- 处理 dual_stack 参数
+		if params.dual_stack then
+			if params.dual_stack == "1" or params.dual_stack == "0" then
+				result.dual_stack = params.dual_stack
+		else
+				result.dual_stack = string.lower(params.dual_stack) == "true" and "1" or "0"
+			end
+			-- 处理 ipstack_prefer 参数
+			if params.ipstack_prefer and params.ipstack_prefer ~= "" then
+				result.ipstack_prefer = params.ipstack_prefer
+			end
+		end
+
+		-- 兼容 allowInsecure / allowlnsecure / insecure
+		if params.allowInsecure or params.allowlnsecure or params.insecure then
+			local insecure = params.allowInsecure or params.allowlnsecure or params.insecure
+			if insecure == true or insecure == "1" or insecure == "true" then
+				result.insecure = "1"
 			end
 		end
 	end
@@ -964,7 +1216,7 @@ local function processData(szType, content)
 	result.alias = nil
 	local switch_enable = result.switch_enable
 	result.switch_enable = nil
-	result.hashkey = md5(jsonStringify(result))
+	result.hashkey = md5(jsonStringify(result) .. "_" .. (alias or ""))
 	result.alias = alias
 	result.switch_enable = switch_enable
 	return result
@@ -1166,7 +1418,7 @@ local execute = function()
 										if dat[3] then
 											dat3 = "://" .. dat[3]
 										end
-										if dat[1] == 'ss' or dat[1] == 'trojan' then
+										if dat[1] == 'ss' or dat[1] == 'trojan' or dat[1] == 'tuic' then
 											result = processData(dat[1], dat[2] .. dat3)
 										else
 											result = processData(dat[1], base64Decode(dat[2]))
@@ -1179,6 +1431,7 @@ local execute = function()
 								if result then
 									-- 中文做地址的 也没有人拿中文域名搞，就算中文域也有Puny Code SB 机场
 									if not result.server or not result.server_port
+										or result.server == "127.0.0.1"
 										or result.alias == "NULL"
 										or check_filer(result)
 										or result.server:match("[^0-9a-zA-Z%-_%.%s]")

@@ -368,35 +368,59 @@ msgstr "您可以自定义 [在线下载和更新] 中 OpenWrt 固件和内核�
 msgid "Tip: The same files as the current OpenWrt system's BOARD (such as rock5b) and kernel (such as 5.10) will be downloaded."
 msgstr "提示：将下载与当前 OpenWrt 系统的 BOARD（如：rock5b）和内核（如：5.10）相同的文件。"
 
-msgid "Download repository of OpenWrt:"
-msgstr "OpenWrt 固件的下载仓库："
+msgid "OpenWrt download repository:"
+msgstr "OpenWrt 文件的下载仓库："
 
-msgid "Set the download repository of the OpenWrt files on github.com in [Online Download Update]."
-msgstr "设置 [在线下载更新] 中 github.com 的 OpenWrt 固件的下载仓库。"
+msgid "Set the OpenWrt files download repository on github.com in [Online Download Update]."
+msgstr "设置 [在线下载更新] 中 github.com 的 OpenWrt 文件的下载仓库。"
 
-msgid "Keywords of Tags in Releases:"
-msgstr "Releases 里 Tags 的关键字："
+msgid "OpenWrt download tags keyword:"
+msgstr "OpenWrt 下载标签关键字："
 
-msgid "Set the keywords of Tags in Releases of github.com in [Online Download Update]."
-msgstr "设置 [在线下载更新] 中 github.com 的 Releases 里 Tags 的关键字。"
+msgid "Set the OpenWrt files download tags keyword for github.com in [Online Download Update]."
+msgstr "设置 [在线下载更新] 中 github.com 的 OpenWrt 文件下载标签关键字。"
 
-msgid "Suffix of OpenWrt files:"
-msgstr "OpenWrt 固件的后缀："
+msgid "OpenWrt files suffix:"
+msgstr "OpenWrt 文件的后缀："
 
-msgid "Set the suffix of the OpenWrt in Releases of github.com in [Online Download Update]."
-msgstr "设置 [在线下载更新] 中 github.com 的 Releases 里 OpenWrt 固件的后缀。"
+msgid "Set the OpenWrt files download suffix for github.com in [Online Download Update]."
+msgstr "设置 [在线下载更新] 中 github.com 的 OpenWrt 文件的后缀。"
 
-msgid "Download path of OpenWrt kernel:"
-msgstr "OpenWrt 内核的下载路径："
+msgid "Kernel download repository:"
+msgstr "内核的下载仓库："
 
-msgid "Set the download path of the kernel in the github.com repository in [Online Download Update]."
-msgstr "设置 [在线下载更新] 中 github.com 仓库里内核的下载路径。"
+msgid "Set the kernel files download repository on github.com in [Online Download Update]."
+msgstr "设置 [在线下载更新] 中 github.com 的内核文件下载仓库。"
+
+msgid "Kernel download tags:"
+msgstr "内核的下载标签："
+
+msgid "Set the kernel files download tags on github.com in [Online Download Update]."
+msgstr "设置 [在线下载更新] 中 github.com 的内核文件下载标签。"
+
+msgid "kernel_rk3588 [Rockchip RK3588 Kernel]"
+msgstr "kernel_rk3588 [Rockchip RK3588 内核]"
+
+msgid "kernel_rk35xx [Rockchip RK35xx Kernel]"
+msgstr "kernel_rk35xx [Rockchip RK35xx 内核]"
+
+msgid "kernel_stable [Mainline Stable Kernel]"
+msgstr "kernel_stable [主线稳定内核]"
+
+msgid "kernel_flippy [Mainline Stable Kernel by Flippy]"
+msgstr "kernel_flippy [Flippy 的主线稳定内核]"
+
+msgid "kernel_h6 [Allwinner H6 Kernel]"
+msgstr "kernel_h6 [Allwinner H6 内核]"
+
+msgid "kernel_beta [Beta Kernel]"
+msgstr "kernel_beta [测试版内核]"
 
 msgid "Set version branch:"
 msgstr "设置版本分支："
 
-msgid "Set the version branch of the openwrt firmware and kernel selected in [Online Download Update]."
-msgstr "设置 [在线下载更新] 时 OpenWrt 固件与内核所选用的版本分支。"
+msgid "Set the version branch of the OpenWrt files and kernel selected in [Online Download Update]."
+msgstr "设置 [在线下载更新] 时 OpenWrt 文件与内核所选用的版本分支。"
 
 msgid "Keep config update:"
 msgstr "保留配置更新："

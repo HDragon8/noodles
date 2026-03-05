@@ -5,12 +5,12 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=filebrowser
-PKG_VERSION:=2.44.0
+PKG_VERSION:=2.61.1
 PKG_RELEASE:=1
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.gz
 PKG_SOURCE_URL:=https://codeload.github.com/filebrowser/filebrowser/tar.gz/v${PKG_VERSION}?
-PKG_HASH:=b2ceb3c9bbfb6e0e2c31764b8ff1d7788fa965081eb3d43452b6a5065027f71f
+PKG_HASH:=fe82a03b4420eefcbd070c271f11ff07b6e6905f385c7c1f7688f34bb16e0804
 
 PKG_LICENSE:=Apache-2.0
 PKG_LICENSE_FILES:=LICENSE
@@ -47,9 +47,9 @@ endef
 define Build/Compile
 	( \
 		pushd "$(PKG_BUILD_DIR)/frontend" ; \
-		npm ci; \
-		npm run lint ; \
-		npm run build ; \
+		npm install -g pnpm ; \
+		pnpm install --frozen-lockfile ; \
+		pnpm run build ; \
 		popd ; \
 		$(call GoPackage/Build/Compile) ; \
 	)

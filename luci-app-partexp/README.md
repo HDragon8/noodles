@@ -4,11 +4,13 @@
   <br>luci-app-partexp<br>
 </h1>
 
-  <p align="center">
-
-  <a target="_blank" href="https://github.com/sirpdboy/luci-app-partexp/releases">
-    <img src="https://img.shields.io/github/release/sirpdboy/luci-app-partexp.svg?style=flat-square&label=luci-app-partexp&colorB=green">
-  </a>
+<p align="center">
+<a href="https://openwrt.org"><img alt="OpenWrt" src="https://img.shields.io/badge/OpenWrt-%E2%89%A519.07-ff0000?logo=openwrt&logoColor=white"></a>
+<a href="https://www.google.com/chrome/"><img alt="Chrome" src="https://img.shields.io/badge/Chrome-%E2%89%A5111-4285F3?logo=googlechrome&logoColor=white"></a>
+<a href="https://www.apple.com/safari/"><img alt="Safari" src="https://img.shields.io/badge/Safari-%E2%89%A516.4-000000?logo=safari&logoColor=white"></a>
+<a href="https://www.mozilla.org/firefox/"><img alt="Firefox" src="https://img.shields.io/badge/Firefox-%E2%89%A5128-FF7138?logo=firefoxbrowser&logoColor=white"></a>
+<a target="_blank" href="https://github.com/sirpdboy/luci-app-partexp/releases"> <img alt="GitHub release" src="https://img.shields.io/github/v/release/sirpdboy/luci-app-partexp"></a>
+<a href="https://github.com/sirpdboy/luci-app-partexp/releases"><img alt="Downloads" src="https://img.shields.io/github/downloads/sirpdboy/luci-app-partexp/total?cacheSeconds=1"></a>
 </p>
 
 [中文] | [English](README.md) 
@@ -20,15 +22,23 @@ Please read this page carefully, which includes precautions and instructions on 
 
 #### One click automatic formatting of partitions, expansion, and automatic mounting of plugins, designed specifically for OPENWRT to simplify the tedious operation of partition mounting for OPENWRT. This plugin requires a lot of effort from Sirpdboy to create and test. Please do not delete the creator's information!!
 
-## Version
 
-- Latest update version number: V1.3.1
-- Update Date: March 26, 2025
-- Update content:
-- Reorganize the partition expansion code and address some unreasonable areas.
-- Add the format for the target partition, which can be specified as ext4, ntfs, Btrfs, or no format.
-- When used as a root directory/or/overlay, it will be formatted in ext4 format.
-- At present, the testing on X86 machines is completely normal, and it has not been tested on other routing devices. Please submit the hard disk partition status and error message if there are any issues.
+### Update Date: January 14, 2026
+
+- Latest updated version number: V2.0.2
+- Update:
+- The newly upgraded JavaScript version supports the OpenWRT 25.12 version.
+- Add a progress bar display function and support for more partition formats.
+- Add more detailed reporting on log partition status.
+- Currently, testing on X86 machines is completely normal, but it has not been tested on other routing devices. If there are any issues, please provide the hard disk partition details and error messages.
+ 
+### Update Date: March 26, 2025
+- Latest updated version number: V1.3.1
+- Update:
+- Reorganize the partition expansion code to address some unreasonable aspects.
+- Add the format option for the target partition, allowing users to specify formatting options such as ext4, NTFS, Btrfs, or no formatting.
+- When used as the root directory or as /overlay, the partition will be automatically formatted as ext4.
+- Currently, testing on X86 machines is completely normal, but it has not been tested on other routing devices. If there are any issues, please provide the hard disk partition information and error messages.
 
  
  
@@ -68,11 +78,13 @@ Luci app parexp automatically obtains formatted partition expansion and automati
 
 ## interface
 
-![screenshots](./doc/partexp0.png)
-
 ![screenshots](./doc/partexp1.png)
 
 ![screenshots](./doc/partexp2.png)
+
+![screenshots](./doc/partexp3.png)
+
+![screenshots](./doc/partexp4.png)
 
 
 # My other project
